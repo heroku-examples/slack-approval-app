@@ -79,7 +79,7 @@ Web interface endpoints for workshops and demos:
 
 Heroku Managed Inference integration:
 - **Embeddings**: Cohere `embed-english-v3.0` for vector generation
-- **Chat Completions**: Claude `claude-3-5-sonnet` for summarization and risk scoring
+- **Chat Completions**: Claude `claude-3-7-sonnet` for summarization and risk scoring
 - Handles API authentication and error handling
 
 ### 7. Semantic Search (`utils/semantic_search.py`)
@@ -495,5 +495,5 @@ The architecture is designed to be:
 - **Maintainable**: Clean code structure and documentation
 - **Extensible**: Easy to add new sources and features
 
-For questions or contributions, please refer to the main README.md file.
+For questions or contributions, please refer to the main [README.md](README.md) file.
 
