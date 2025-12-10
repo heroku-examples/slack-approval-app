@@ -22,6 +22,7 @@ The Universal Approval Hub is a Flask-based web application that acts as a centr
 
 - **Multi-Source Integration**: Accepts approval requests from Workday, Concur, and Salesforce via REST API
 - **Slack Integration**: Displays approval requests in Slack Home Tab with interactive buttons
+- **Web Interface**: User-friendly forms and status dashboard for workshops and demos
 - **AI-Powered Features**: 
   - Semantic search using vector embeddings (Cohere)
   - Automatic summarization (Claude)
@@ -58,27 +59,37 @@ Slack integration endpoints:
 - Verifies Slack request signatures
 - Builds Block Kit UI components
 
-### 4. Database Layer (`database.py`, `models.py`)
+### 4. Web Routes (`routes/web_routes.py`)
+
+Web interface endpoints for workshops and demos:
+- `GET /`: Landing page with app overview
+- `GET /create-request`: Request creation form with dynamic metadata fields
+- `GET /status`: Status dashboard showing all requests with filtering
+- `GET /api/requests`: API endpoint for fetching requests with optional filters
+- Provides user-friendly interface for creating test requests
+- Real-time status dashboard with auto-refresh
+
+### 5. Database Layer (`database.py`, `models.py`)
 
 - **Database Initialization**: Sets up PostgreSQL connection, enables pgvector extension
 - **Models**: SQLAlchemy ORM models for `ApprovalRequest`
 - **Schema**: Single table with JSONB metadata and vector embeddings
 
-### 5. AI/ML Integration (`utils/heroku_inference.py`)
+### 6. AI/ML Integration (`utils/heroku_inference.py`)
 
 Heroku Managed Inference integration:
 - **Embeddings**: Cohere `embed-english-v3.0` for vector generation
 - **Chat Completions**: Claude `claude-3-5-sonnet` for summarization and risk scoring
 - Handles API authentication and error handling
 
-### 6. Semantic Search (`utils/semantic_search.py`)
+### 7. Semantic Search (`utils/semantic_search.py`)
 
 pgvector-based semantic search:
 - Converts text queries to vector embeddings
 - Performs cosine similarity search in PostgreSQL
 - Returns ranked results by relevance
 
-### 7. Slack Utilities (`utils/slack_utils.py`)
+### 8. Slack Utilities (`utils/slack_utils.py`)
 
 Helper functions for Slack API:
 - Publishes Home Tab views

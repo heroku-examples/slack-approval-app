@@ -210,10 +210,32 @@
         .quick-fill:hover {
             color: #764ba2;
         }
+
+        .nav-links {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .nav-links a {
+            color: #667eea;
+            text-decoration: none;
+            margin-right: 15px;
+            font-size: 14px;
+        }
+
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
     <div class="container">
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/create-request">Create Request</a>
+            <a href="/status">Status Dashboard</a>
+        </div>
         <h1>📋 Create Test Approval Request</h1>
         <p class="subtitle">Mock approval requests for testing and workshops</p>
 
@@ -418,12 +440,11 @@
                 loading.classList.remove('show');
 
                 if (response.ok) {
-                    showAlert(`✅ Request created successfully! ID: ${result.id}. Check your Slack Home Tab!`, 'success');
-                    form.reset();
-                    // Hide metadata sections
-                    workdayMetadata.classList.remove('active');
-                    concurMetadata.classList.remove('active');
-                    salesforceMetadata.classList.remove('active');
+                    showAlert(`✅ Request created successfully! Redirecting to dashboard...`, 'success');
+                    // Redirect to status dashboard after 1.5 seconds
+                    setTimeout(() => {
+                        window.location.href = '/status';
+                    }, 1500);
                 } else {
                     showAlert(`❌ Error: ${result.error || 'Failed to create request'}`, 'error');
                 }

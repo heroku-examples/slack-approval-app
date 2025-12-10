@@ -27,8 +27,16 @@ This guide shows you how to create test approval requests to try out the approva
 3. **Click "Fill Sample Data"** to auto-fill example data, or enter your own
 
 4. **Click "Create Request"** - the request will appear in your Slack Home Tab!
+5. **You'll be automatically redirected to the Status Dashboard** where you can see all requests and their statuses
 
 This is perfect for workshops and demos - no command line needed!
+
+**Status Dashboard:**
+After creating a request, you'll be redirected to `/status` where you can:
+- View all requests (pending, approved, rejected)
+- See statistics and counts
+- Filter by status, source, or approver
+- Watch real-time updates (auto-refreshes every 10 seconds)
 
 ### Option 2: Create Sample Requests (Script)
 
@@ -222,10 +230,12 @@ curl -X POST https://your-app.herokuapp.com/api/new-approval \
 ## Testing the Approval Flow
 
 1. **Create a test request** using one of the methods above
-2. **Open Slack** and navigate to the Universal Approval Hub app
-3. **Open the Home Tab** - you should see your test request
-4. **Click "✅ Approve" or "❌ Reject"** to test the approval flow
-5. **Check your Slack DMs** for confirmation messages
+2. **You'll be redirected to the Status Dashboard** - you can see the request with "Pending" status
+3. **Open Slack** and navigate to the Universal Approval Hub app
+4. **Open the Home Tab** - you should see your test request
+5. **Click "✅ Approve" or "❌ Reject"** to test the approval flow
+6. **Check your Slack DMs** for confirmation messages
+7. **Return to the Status Dashboard** - you'll see the status update to "Approved" or "Rejected" (auto-refreshes every 10 seconds)
 
 ## Using the Seed Script
 

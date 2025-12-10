@@ -310,6 +310,7 @@ The easiest way is through the web interface - no command line needed!
    ```
 
 2. Fill out the form and click "Create Request" - the request will appear in your Slack Home Tab!
+3. You'll be redirected to the Status Dashboard (`/status`) to view all requests and their statuses
 
 **Alternative Methods:**
 

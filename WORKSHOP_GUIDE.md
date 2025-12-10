@@ -60,8 +60,27 @@ Before you can test the approval flow, you'll need to create some test approval 
    - Optionally click "Fill Sample Data" to auto-fill example data
 
 3. **Click "Create Request"** - the request will appear in your Slack Home Tab!
+4. **You'll be redirected to the Status Dashboard** where you can see all requests and their statuses
 
 You can create multiple requests to test different scenarios. Each request type (Workday, Concur, Salesforce) displays different information in the approval cards.
+
+### Viewing Request Status
+
+After creating requests, you can view them in the **Status Dashboard**:
+
+1. **Open your browser** and go to:
+   ```
+   https://your-app.herokuapp.com/status
+   ```
+   (Ask your facilitator for the exact URL)
+
+2. **View all requests** - You'll see:
+   - Statistics showing pending, approved, and rejected counts
+   - All requests with their current status
+   - Filter options to view by status, source, or approver
+   - Request details including metadata and AI summaries
+
+3. **Watch status updates** - The dashboard auto-refreshes every 10 seconds, so you can see status changes in real-time after approving/rejecting in Slack!
 
 ## Trying Out the Application
 

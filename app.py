@@ -12,6 +12,7 @@ from dotenv import load_dotenv
 from config import Config
 from database import db, init_db
 from routes import api_bp, slack_bp
+from routes.web_routes import web_bp
 from utils.logging_config import setup_logging
 
 # Load environment variables
@@ -38,6 +39,7 @@ except Exception as e:
 # Register blueprints
 app.register_blueprint(api_bp, url_prefix='/api')
 app.register_blueprint(slack_bp, url_prefix='/slack')
+app.register_blueprint(web_bp)
 
 
 @app.errorhandler(404)
