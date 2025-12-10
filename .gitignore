@@ -56,4 +56,7 @@ logs/
 
 # Heroku
 .heroku/
+
+
 .env
+commit-message.txt

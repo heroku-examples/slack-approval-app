@@ -121,19 +121,81 @@ The application will be available at `http://localhost:5000`
 
 ## Slack App Configuration
 
-### Required OAuth Scopes
+### Required Bot Token OAuth Scopes
 
-- `app_mentions:read`
-- `channels:history`
-- `chat:write`
-- `commands`
-- `users:read`
-- `users:read.email`
+The following **Bot Token** scopes are required:
+
+- `chat:write` - **Required** - Send messages as the bot and manage Home Tab content
+- `users:read` - **Required** - View people in the workspace
+- `users:read.email` - **Required** - View email addresses of people in the workspace
+- `app_mentions:read` - Read mentions of your app (optional, if using mentions)
+- `channels:history` - View messages in public channels (optional, if needed)
+- `commands` - Add slash commands (optional, if using slash commands)
+
+> **Note**: The `app_home:write` scope is not available in Slack's current permission model. The `chat:write` scope is sufficient for publishing Home Tab views via `views.publish()`. Additionally, the Home Tab endpoint (`/slack/home`) approach used by this app doesn't require any special scope beyond `chat:write`.
+
+#### How to Configure Bot Token Scopes in Slack
+
+1. **Navigate to your Slack App**:
+   - Go to [api.slack.com/apps](https://api.slack.com/apps)
+   - Select your app (or create a new one)
+
+2. **Open OAuth & Permissions**:
+   - In the left sidebar, click **"OAuth & Permissions"** (under **Features**)
+
+3. **Add Bot Token Scopes**:
+   - Scroll down to the **"Scopes"** section
+   - Find the **"Bot Token Scopes"** subsection
+   - Click **"Add New Scope"** button
+   - Add each of the required scopes listed above:
+     - `chat:write` (required)
+     - `users:read` (required)
+     - `users:read.email` (required)
+     - `app_mentions:read` (optional)
+     - `channels:history` (optional)
+     - `commands` (optional)
+
+4. **Install/Reinstall the App**:
+   - After adding scopes, scroll to the top of the page
+   - Click **"Install to Workspace"** (or **"Reinstall to Workspace"** if already installed)
+   - Review the permissions and click **"Allow"**
+
+5. **Copy the Bot Token**:
+   - After installation, you'll see **"Bot User OAuth Token"** at the top of the page
+   - Copy this token (starts with `xoxb-`)
+   - Set it as `SLACK_BOT_TOKEN` in your environment variables
+
+> **Note**: If you add new scopes after the app is already installed, you must reinstall the app to your workspace for the new scopes to take effect.
+
+### App-Level Token Scopes (Optional)
+
+**App-level tokens are NOT required** for the current webhook-based implementation. This application uses:
+- Events API (webhooks) for receiving events
+- Interactive Components (webhooks) for button interactions
+- Bot tokens for publishing Home Tab views and sending messages
+
+If you plan to use **Socket Mode** instead of webhooks (for development or firewall-restricted environments), you would need an app-level token with:
+
+- `connections:write` - Connect to Slack via Socket Mode
+
+To create an app-level token:
+1. Go to your Slack app settings → **Basic Information**
+2. Scroll to **App-Level Tokens**
+3. Click **Generate Token and Scopes**
+4. Add the `connections:write` scope
+5. Copy the token (starts with `xapp-`)
+
+> **Note**: For production deployments on Heroku, webhooks are recommended as they're more reliable and don't require maintaining persistent WebSocket connections.
 
 ### Event Subscriptions
 
 Configure the following events:
-- `app_home_opened`
+- `app_home_opened` - Triggered when a user opens the Home Tab
+
+Set the Request URL to:
+```
+https://your-app.herokuapp.com/slack/events
+```
 
 ### Interactive Components
 
@@ -391,7 +453,7 @@ UniversalApprovalHub/
 
 ## License
 
-[Specify your license here]
+This project is licensed under the Apache License 2.0. See the [LICENSE](LICENSE) file for details.
 
 ## Support
 
