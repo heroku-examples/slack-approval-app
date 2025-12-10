@@ -25,8 +25,15 @@ app.config.from_object(Config)
 setup_logging(app.config.get('LOG_LEVEL', 'INFO'))
 logger = logging.getLogger(__name__)
 
-# Initialize database
-init_db(app)
+# Initialize database (with error handling for Heroku)
+try:
+    init_db(app)
+except Exception as e:
+    logger.error(f'Database initialization failed: {e}')
+    logger.warning(
+        'Application will start but database features may not work. '
+        'Ensure DATABASE_URL is set or attach a Heroku Postgres add-on.'
+    )
 
 # Register blueprints
 app.register_blueprint(api_bp, url_prefix='/api')

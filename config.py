@@ -21,7 +21,22 @@ class Config:
     # Database configuration
     # Heroku provides DATABASE_URL automatically when Postgres add-on is attached
     # Convert postgres:// to postgresql:// for SQLAlchemy 2.0+ compatibility
-    _database_url = os.environ.get('DATABASE_URL', 'postgresql://localhost/approval_hub')
+    _database_url = os.environ.get('DATABASE_URL')
+    
+    # On Heroku, DATABASE_URL should be set automatically
+    # For local development, default to localhost
+    if not _database_url:
+        # Check if we're on Heroku (DYNO env var is set)
+        if os.environ.get('DYNO'):
+            # On Heroku without DATABASE_URL - this is an error
+            raise ValueError(
+                'DATABASE_URL is not set on Heroku. '
+                'Attach a Postgres add-on: heroku addons:create heroku-postgresql:mini'
+            )
+        else:
+            # Local development - use default
+            _database_url = 'postgresql://localhost/approval_hub'
+    
     if _database_url.startswith('postgres://'):
         _database_url = _database_url.replace('postgres://', 'postgresql://', 1)
     SQLALCHEMY_DATABASE_URI: str = _database_url
