@@ -6,7 +6,7 @@ sets up logging, and registers all blueprints.
 
 import os
 import logging
-from flask import Flask
+from flask import Flask, render_template
 from dotenv import load_dotenv
 
 from config import Config
@@ -85,6 +85,26 @@ def health_check() -> tuple[dict, int]:
     :rtype: tuple[dict, int]
     """
     return {'status': 'healthy', 'service': 'universal-approval-hub'}, 200
+
+
+@app.route('/')
+def index() -> str:
+    """Landing page with link to create test requests.
+
+    :return: HTML response with landing page
+    :rtype: str
+    """
+    return render_template('index.html')
+
+
+@app.route('/create-request')
+def create_request() -> str:
+    """Page for creating test approval requests.
+
+    :return: HTML response with request creation form
+    :rtype: str
+    """
+    return render_template('create_request.html')
 
 
 if __name__ == '__main__':

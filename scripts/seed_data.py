@@ -35,7 +35,13 @@ def seed_approval_requests() -> None:
         # db.session.commit()
 
         # Sample approver ID (replace with actual Slack User ID for testing)
-        approver_id = os.environ.get('SLACK_TEST_APPROVER_ID', 'U1234567890')
+        approver_id = os.environ.get('SLACK_TEST_APPROVER_ID')
+        
+        if not approver_id:
+            print('❌ Error: SLACK_TEST_APPROVER_ID environment variable is required')
+            print('   Set it to your Slack User ID (starts with U)')
+            print('   Example: export SLACK_TEST_APPROVER_ID=U01234ABCD')
+            sys.exit(1)
 
         # Sample Workday PTO requests
         workday_requests = [

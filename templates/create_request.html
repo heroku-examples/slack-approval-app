@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Test Approval Request - Universal Approval Hub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .required {
+            color: #e74c3c;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .metadata-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 6px;
+            margin-top: 20px;
+        }
+
+        .metadata-section h3 {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .metadata-fields {
+            display: none;
+        }
+
+        .metadata-fields.active {
+            display: block;
+        }
+
+        .metadata-field {
+            margin-bottom: 15px;
+        }
+
+        .help-text {
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        button {
+            flex: 1;
+            padding: 14px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .quick-fill {
+            font-size: 12px;
+            color: #667eea;
+            cursor: pointer;
+            text-decoration: underline;
+            margin-left: 8px;
+        }
+
+        .quick-fill:hover {
+            color: #764ba2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📋 Create Test Approval Request</h1>
+        <p class="subtitle">Mock approval requests for testing and workshops</p>
+
+        <div id="alert" class="alert"></div>
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Creating request...</p>
+        </div>
+
+        <form id="requestForm">
+            <div class="form-group">
+                <label for="request_source">Request Source <span class="required">*</span></label>
+                <select id="request_source" name="request_source" required>
+                    <option value="">Select a source...</option>
+                    <option value="Workday">Workday (PTO Requests)</option>
+                    <option value="Concur">Concur (Expense Requests)</option>
+                    <option value="Salesforce">Salesforce (Deal Requests)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="requester_name">Requester Name <span class="required">*</span></label>
+                <input type="text" id="requester_name" name="requester_name" required placeholder="e.g., John Doe">
+            </div>
+
+            <div class="form-group">
+                <label for="approver_id">Approver Slack User ID <span class="required">*</span></label>
+                <input type="text" id="approver_id" name="approver_id" required placeholder="e.g., U01234ABCD">
+                <p class="help-text">Find your Slack User ID: Click your profile → More → Copy member ID</p>
+            </div>
+
+            <div class="form-group">
+                <label for="justification_text">Justification <span class="required">*</span></label>
+                <textarea id="justification_text" name="justification_text" required placeholder="Describe the request..."></textarea>
+            </div>
+
+            <div class="metadata-section">
+                <h3>Metadata (Optional)</h3>
+                <p class="help-text">Add source-specific metadata. Fields will appear based on selected source.</p>
+                
+                <div id="workday-metadata" class="metadata-fields">
+                    <div class="metadata-field">
+                        <label for="date_range">Date Range</label>
+                        <input type="text" id="date_range" name="date_range" placeholder="e.g., 2024-02-15 to 2024-02-22">
+                    </div>
+                    <div class="metadata-field">
+                        <label for="days_requested">Days Requested</label>
+                        <input type="text" id="days_requested" name="days_requested" placeholder="e.g., 5">
+                    </div>
+                </div>
+
+                <div id="concur-metadata" class="metadata-fields">
+                    <div class="metadata-field">
+                        <label for="amount">Amount</label>
+                        <input type="text" id="amount" name="amount" placeholder="e.g., 2450.75">
+                    </div>
+                    <div class="metadata-field">
+                        <label for="trip_dates">Trip Dates</label>
+                        <input type="text" id="trip_dates" name="trip_dates" placeholder="e.g., 2024-02-05 to 2024-02-07">
+                    </div>
+                    <div class="metadata-field">
+                        <label for="pdf_url">PDF Receipt URL</label>
+                        <input type="text" id="pdf_url" name="pdf_url" placeholder="https://example.com/receipt.pdf">
+                    </div>
+                    <div class="metadata-field">
+                        <label for="category">Category</label>
+                        <input type="text" id="category" name="category" placeholder="e.g., Travel">
+                    </div>
+                </div>
+
+                <div id="salesforce-metadata" class="metadata-fields">
+                    <div class="metadata-field">
+                        <label for="customer_name">Customer Name</label>
+                        <input type="text" id="customer_name" name="customer_name" placeholder="e.g., TechCorp Inc.">
+                    </div>
+                    <div class="metadata-field">
+                        <label for="deal_value">Deal Value</label>
+                        <input type="text" id="deal_value" name="deal_value" placeholder="e.g., 250000.00">
+                    </div>
+                    <div class="metadata-field">
+                        <label for="close_date">Close Date</label>
+                        <input type="text" id="close_date" name="close_date" placeholder="e.g., 2024-03-31">
+                    </div>
+                    <div class="metadata-field">
+                        <label for="stage">Stage</label>
+                        <input type="text" id="stage" name="stage" placeholder="e.g., Negotiation">
+                    </div>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button type="button" class="btn-secondary" onclick="fillSampleData()">Fill Sample Data</button>
+                <button type="submit" class="btn-primary">Create Request</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        const requestSource = document.getElementById('request_source');
+        const workdayMetadata = document.getElementById('workday-metadata');
+        const concurMetadata = document.getElementById('concur-metadata');
+        const salesforceMetadata = document.getElementById('salesforce-metadata');
+
+        requestSource.addEventListener('change', function() {
+            // Hide all metadata sections
+            workdayMetadata.classList.remove('active');
+            concurMetadata.classList.remove('active');
+            salesforceMetadata.classList.remove('active');
+
+            // Show relevant metadata section
+            if (this.value === 'Workday') {
+                workdayMetadata.classList.add('active');
+            } else if (this.value === 'Concur') {
+                concurMetadata.classList.add('active');
+            } else if (this.value === 'Salesforce') {
+                salesforceMetadata.classList.add('active');
+            }
+        });
+
+        function showAlert(message, type) {
+            const alert = document.getElementById('alert');
+            alert.textContent = message;
+            alert.className = `alert alert-${type} show`;
+            setTimeout(() => {
+                alert.classList.remove('show');
+            }, 5000);
+        }
+
+        function fillSampleData() {
+            const source = requestSource.value || 'Workday';
+            
+            if (source === 'Workday') {
+                document.getElementById('requester_name').value = 'Alice Johnson';
+                document.getElementById('justification_text').value = 'I need to take time off for a family vacation to Hawaii. We have been planning this trip for months and have already booked flights and hotels.';
+                document.getElementById('date_range').value = '2024-02-15 to 2024-02-22';
+                document.getElementById('days_requested').value = '5';
+            } else if (source === 'Concur') {
+                document.getElementById('requester_name').value = 'Bob Smith';
+                document.getElementById('justification_text').value = 'Business trip to San Francisco for client meeting. Expenses include flights, hotel, meals, and transportation. All receipts attached.';
+                document.getElementById('amount').value = '2450.75';
+                document.getElementById('trip_dates').value = '2024-02-05 to 2024-02-07';
+                document.getElementById('pdf_url').value = 'https://example.com/receipts/expense_001.pdf';
+                document.getElementById('category').value = 'Travel';
+            } else if (source === 'Salesforce') {
+                document.getElementById('requester_name').value = 'Carol Williams';
+                document.getElementById('justification_text').value = 'Large enterprise deal with TechCorp Inc. This is a strategic account with high revenue potential. Customer has requested special pricing terms and extended payment schedule.';
+                document.getElementById('customer_name').value = 'TechCorp Inc.';
+                document.getElementById('deal_value').value = '250000.00';
+                document.getElementById('close_date').value = '2024-03-31';
+                document.getElementById('stage').value = 'Negotiation';
+            }
+            
+            // Trigger change event to show metadata fields
+            requestSource.value = source;
+            requestSource.dispatchEvent(new Event('change'));
+        }
+
+        document.getElementById('requestForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const loading = document.getElementById('loading');
+            const form = e.target;
+            loading.classList.add('show');
+
+            // Collect form data
+            const formData = new FormData(form);
+            const data = {
+                request_source: formData.get('request_source'),
+                requester_name: formData.get('requester_name'),
+                approver_id: formData.get('approver_id'),
+                justification_text: formData.get('justification_text'),
+                metadata: {}
+            };
+
+            // Collect metadata based on source
+            const source = data.request_source;
+            if (source === 'Workday') {
+                if (formData.get('date_range')) data.metadata.date_range = formData.get('date_range');
+                if (formData.get('days_requested')) data.metadata.days_requested = parseInt(formData.get('days_requested'));
+            } else if (source === 'Concur') {
+                if (formData.get('amount')) data.metadata.amount = parseFloat(formData.get('amount'));
+                if (formData.get('trip_dates')) data.metadata.trip_dates = formData.get('trip_dates');
+                if (formData.get('pdf_url')) data.metadata.pdf_url = formData.get('pdf_url');
+                if (formData.get('category')) data.metadata.category = formData.get('category');
+            } else if (source === 'Salesforce') {
+                if (formData.get('customer_name')) data.metadata.customer_name = formData.get('customer_name');
+                if (formData.get('deal_value')) data.metadata.deal_value = parseFloat(formData.get('deal_value'));
+                if (formData.get('close_date')) data.metadata.close_date = formData.get('close_date');
+                if (formData.get('stage')) data.metadata.stage = formData.get('stage');
+            }
+
+            try {
+                const response = await fetch('/api/new-approval', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                loading.classList.remove('show');
+
+                if (response.ok) {
+                    showAlert(`✅ Request created successfully! ID: ${result.id}. Check your Slack Home Tab!`, 'success');
+                    form.reset();
+                    // Hide metadata sections
+                    workdayMetadata.classList.remove('active');
+                    concurMetadata.classList.remove('active');
+                    salesforceMetadata.classList.remove('active');
+                } else {
+                    showAlert(`❌ Error: ${result.error || 'Failed to create request'}`, 'error');
+                }
+            } catch (error) {
+                loading.classList.remove('show');
+                showAlert(`❌ Error: ${error.message}`, 'error');
+            }
+        });
+    </script>
+</body>
+</html>
+

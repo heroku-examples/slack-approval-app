@@ -121,6 +121,8 @@ The application will be available at `http://localhost:5000`
 
 ## Slack App Configuration
 
+> **⚠️ IMPORTANT**: If you don't see the Home Tab interface when opening the app in Slack, you likely need to enable the Home Tab feature in your Slack app settings. See **[SLACK_SETUP.md](SLACK_SETUP.md)** for detailed step-by-step configuration instructions.
+
 ### Required Bot Token OAuth Scopes
 
 The following **Bot Token** scopes are required:
@@ -280,6 +282,8 @@ Returns Home Tab view for a user.
 
 ## Testing
 
+### Unit Tests
+
 Run the test suite:
 
 ```bash
@@ -290,6 +294,39 @@ Run with coverage:
 
 ```bash
 pytest --cov=. --cov-report=html
+```
+
+### Creating Test Approval Requests
+
+To test the approval flow without connecting to external systems, you can create mock approval requests. See **[TESTING.md](TESTING.md)** for detailed instructions.
+
+**🌟 Recommended: Web Interface (Perfect for Workshops/Demos)**
+
+The easiest way is through the web interface - no command line needed!
+
+1. Open your browser and navigate to:
+   ```
+   https://your-app.herokuapp.com/create-request
+   ```
+
+2. Fill out the form and click "Create Request" - the request will appear in your Slack Home Tab!
+
+**Alternative Methods:**
+
+```bash
+# On Heroku (script)
+heroku run python scripts/create_test_request.py --samples --approver-id YOUR_SLACK_USER_ID --app your-app-name
+
+# Or use the API
+curl -X POST https://your-app.herokuapp.com/api/new-approval \
+  -H "Content-Type: application/json" \
+  -d '{
+    "request_source": "Workday",
+    "requester_name": "John Doe",
+    "approver_id": "YOUR_SLACK_USER_ID",
+    "justification_text": "Test PTO request",
+    "metadata": {"date_range": "2024-02-15 to 2024-02-22"}
+  }'
 ```
 
 ## Deployment to Heroku
