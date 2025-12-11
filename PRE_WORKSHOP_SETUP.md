@@ -284,7 +284,7 @@ The workshop will cover:
 - Configuring Slack integrations
 - Deploying to Heroku
 - Testing your application
-- Exploring AI-powered features
+- Discussing AI-powered future features
 
 **⏱️ Workshop Time After Pre-Setup**: 40-60 minutes (reduced from 60-90 minutes)
 

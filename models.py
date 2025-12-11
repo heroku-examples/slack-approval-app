@@ -9,8 +9,13 @@ from typing import Optional, Dict, Any
 from sqlalchemy import Column, Integer, String, DateTime, JSON, Text
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.sql import func
+import os
 
 from database import db
+
+# Use JSONB for PostgreSQL, JSON for SQLite (for testing)
+_use_jsonb = not os.environ.get('DATABASE_URL', '').startswith('sqlite')
+MetadataType = JSONB if _use_jsonb else JSON
 
 
 class ApprovalRequest(db.Model):
@@ -39,7 +44,7 @@ class ApprovalRequest(db.Model):
     approver_id = Column(String(50), nullable=False, index=True)
     status = Column(String(20), nullable=False, default='Pending', index=True)
     justification_text = Column(Text, nullable=True)
-    metadata_json = Column(JSONB, nullable=True)
+    metadata_json = Column(MetadataType, nullable=True)
     # Note: search_vector is stored as vector(1024) in database
     # SQLAlchemy doesn't have native pgvector support, so we use Text
     # and handle casting in SQL queries

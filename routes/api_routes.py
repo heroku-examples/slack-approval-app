@@ -27,22 +27,102 @@ def new_approval() -> tuple[Dict[str, Any], int]:
     Accepts JSON payload with approval request data, generates embeddings
     and summary, stores in database, and updates Slack Home Tab.
 
-    Expected JSON payload:
-    {
-        "request_source": "Workday|Concur|Salesforce",
-        "requester_name": "John Doe",
-        "approver_id": "U123456",
-        "justification_text": "Request justification...",
-        "metadata": {
-            "date_range": "2024-01-01 to 2024-01-05",
-            "amount": 500.00,
-            ...
-        }
-    }
-
-    :return: JSON response with request ID and status
-    :rtype: tuple[Dict[str, Any], int]
-    :raises: 400 for invalid input, 500 for server errors
+    ---
+    tags:
+      - Approval Requests
+    consumes:
+      - application/json
+    produces:
+      - application/json
+    parameters:
+      - in: body
+        name: approval_request
+        description: Approval request data
+        required: true
+        schema:
+          type: object
+          required:
+            - request_source
+            - requester_name
+            - approver_id
+          properties:
+            request_source:
+              type: string
+              enum: [Workday, Concur, Salesforce]
+              description: Source system identifier
+              example: Workday
+            requester_name:
+              type: string
+              description: Name of the employee making the request
+              example: John Doe
+            approver_id:
+              type: string
+              description: Slack User ID of the manager who should approve
+              example: U123456
+            justification_text:
+              type: string
+              description: Text justification for the request
+              example: Need time off for family vacation
+            metadata:
+              type: object
+              description: Source-specific metadata (varies by request_source)
+              properties:
+                date_range:
+                  type: string
+                  description: Date range (for Workday PTO requests)
+                  example: "2024-01-01 to 2024-01-05"
+                days_requested:
+                  type: integer
+                  description: Number of days requested (for Workday)
+                  example: 5
+                amount:
+                  type: number
+                  description: Expense amount (for Concur)
+                  example: 1250.75
+                trip_dates:
+                  type: string
+                  description: Trip dates (for Concur)
+                  example: "2024-02-05 to 2024-02-07"
+                customer_name:
+                  type: string
+                  description: Customer name (for Salesforce)
+                  example: TechCorp Inc.
+                deal_value:
+                  type: number
+                  description: Deal value (for Salesforce)
+                  example: 250000.00
+    responses:
+      201:
+        description: Approval request created successfully
+        schema:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: ID of the created approval request
+              example: 1
+            status:
+              type: string
+              example: created
+            message:
+              type: string
+              example: Approval request created successfully
+      400:
+        description: Bad request - missing required fields or invalid data
+        schema:
+          type: object
+          properties:
+            error:
+              type: string
+              example: Missing required field: request_source
+      500:
+        description: Internal server error
+        schema:
+          type: object
+          properties:
+            error:
+              type: string
+              example: Internal server error
     """
     try:
         data = request.get_json()
