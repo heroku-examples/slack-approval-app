@@ -143,7 +143,7 @@ python3 --version
 
 > **Note**: This is optional and can be done during the workshop. However, doing it beforehand saves time.
 
-### 7. Create Slack Sandbox Workspace (Optional)
+### 6. Create Slack Sandbox Workspace (Optional)
 
 1. **Go to Slack Developer Program**:
    - Visit [the Slack Developer Program](https://api.slack.com/developer-program)
