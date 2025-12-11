@@ -199,12 +199,12 @@ If you haven't completed the pre-workshop setup, don't worry! The workshop will 
 
 1. **Get the Repository URL**:
    - Ask your facilitator for the GitHub repository URL
-   - Or use: `https://github.com/your-org/UniversalApprovalHub.git`
+   - Or use: `https://github.com/heroku-examples/slack-approval-app.git`
 
 2. **Clone the Repository**:
    ```bash
-   git clone https://github.com/your-org/UniversalApprovalHub.git
-   cd UniversalApprovalHub
+   git clone https://github.com/heroku-examples/slack-approval-app.git
+   cd slack-approval-app
    ```
 
 3. **Verify Files**:
@@ -311,7 +311,6 @@ If you haven't completed the pre-workshop setup, don't worry! The workshop will 
    ```bash
    git push heroku main
    ```
-   - Or if your default branch is `master`: `git push heroku master`
    - This will build and deploy your application
 
 2. **Watch the Build**:
@@ -377,7 +376,7 @@ Now that your app is deployed, complete the Slack configuration:
    - **Approver Slack User ID**: Paste your Slack User ID (from Step 17)
    - **Justification**: Enter "Test PTO request for workshop"
    - **Metadata**: Click "Fill Sample Data" to auto-fill, or enter manually
-     - Date Range: `2024-02-15 to 2024-02-22`
+     - Date Range: `2026-02-15 to 2026-02-22`
 
 3. **Create Request**:
    - Click **"Create Request"**

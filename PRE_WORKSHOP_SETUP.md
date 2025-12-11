@@ -133,6 +133,7 @@ python3 --version
 **What you need before the workshop:**
 - Git installed and verified (see Software Installation above)
 - GitHub account created (see Account Setup above)
+- Heroku account
 
 **During the workshop, you will:**
 - Receive the repository URL from your facilitator
@@ -265,7 +266,7 @@ The workshop will cover:
 - Configuring Slack integrations
 - Deploying to Heroku
 - Testing your application
-- Exploring AI-powered features
+- Exploring AI-powered future features
 
 **⏱️ Workshop Time After Pre-Setup**: 40-60 minutes (reduced from 60-90 minutes)
 
