@@ -114,7 +114,7 @@ def new_approval() -> tuple[Dict[str, Any], int]:
           properties:
             error:
               type: string
-              example: Missing required field: request_source
+              example: "Missing required field: request_source"
       500:
         description: Internal server error
         schema:
