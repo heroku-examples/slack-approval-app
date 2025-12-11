@@ -126,40 +126,18 @@ python3 --version
    - Ensure you can access your account
    - **Salesforce Employees**: Verify access via the BaseCamp article if needed
 
-## Repository Setup (5 minutes)
+## Repository Setup
 
-### 6. Clone the Repository
+> **📋 Note**: Repository cloning will be done **during the workshop**. This ensures all attendees follow along together and receive guidance from the facilitator. You don't need to clone the repository before the workshop starts.
 
-> **Important**: You'll need the repository URL from your workshop facilitator. Contact them before the workshop if you don't have it.
+**What you need before the workshop:**
+- Git installed and verified (see Software Installation above)
+- GitHub account created (see Account Setup above)
 
-1. **Get the Repository URL**:
-   - Ask your facilitator for the GitHub repository URL
-   - It will look something like: `https://github.com/your-org/UniversalApprovalHub.git`
-
-2. **Clone the Repository**:
-   ```bash
-   git clone https://github.com/your-org/UniversalApprovalHub.git
-   cd UniversalApprovalHub
-   ```
-
-3. **Verify Files Are Present**:
-   ```bash
-   ls -la
-   ```
-   You should see files like:
-   - `app.py`
-   - `requirements.txt`
-   - `Procfile`
-   - `README.md`
-   - `templates/` directory
-   - `routes/` directory
-   - etc.
-
-4. **Verify You're in the Right Directory**:
-   ```bash
-   pwd
-   # Should show the path ending in UniversalApprovalHub
-   ```
+**During the workshop, you will:**
+- Receive the repository URL from your facilitator
+- Clone the repository together as a group
+- Follow step-by-step instructions in the workshop guide
 
 ## Optional: Slack Sandbox Workspace (5 minutes)
 
@@ -202,17 +180,13 @@ python3 --version      # Should show 3.11.x or higher
 heroku auth:whoami     # Should show your email address
 ```
 
-### Repository Verification
+### Git Verification
 
 ```bash
-# Navigate to the repository (if you cloned it)
-cd UniversalApprovalHub
-
-# Verify files are present
-ls -la                 # Should show project files
-
-# Verify you're in the right directory
-pwd                    # Should end with UniversalApprovalHub
+# Verify Git is installed and configured
+git --version          # Should show version number
+git config --global user.name   # Should show your name (optional but recommended)
+git config --global user.email  # Should show your email (optional but recommended)
 ```
 
 ### Account Verification
@@ -220,6 +194,7 @@ pwd                    # Should end with UniversalApprovalHub
 - [ ] GitHub account created and accessible
 - [ ] Heroku account created and accessible at [dashboard.heroku.com](https://dashboard.heroku.com)
 - [ ] Slack account created (optional, but helpful)
+- [ ] Git installed and verified
 
 ## Troubleshooting
 
@@ -279,12 +254,18 @@ Once you've completed all the steps above and verified everything works:
 
 ✅ **You're ready for the workshop!**
 
+**Important**: The repository will be cloned **during the workshop** so everyone follows along together with facilitator guidance. This ensures:
+- All attendees receive step-by-step instructions at the same time
+- The facilitator can provide real-time help and answer questions
+- Everyone stays synchronized through the deployment process
+
 The workshop will cover:
+- Cloning the repository (with facilitator guidance)
 - Setting up your Slack app
 - Configuring Slack integrations
 - Deploying to Heroku
 - Testing your application
-- Discussing AI-powered future features
+- Exploring AI-powered features
 
 **⏱️ Workshop Time After Pre-Setup**: 40-60 minutes (reduced from 60-90 minutes)
 
@@ -306,6 +287,9 @@ By completing this pre-workshop setup, you'll:
 - ✅ Focus on the exciting parts: building and deploying
 - ✅ Have a smoother workshop experience
 - ✅ Be ready to dive right into coding
+- ✅ Have all tools and accounts ready when the facilitator shares the repository
+
+**Remember**: The repository will be cloned during the workshop so everyone follows along together with facilitator guidance.
 
 See you at the workshop! 🚀
 
