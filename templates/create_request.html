@@ -3,336 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Test Approval Request - Universal Approval Hub</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .container {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            max-width: 600px;
-            width: 100%;
-            padding: 40px;
-        }
-
-        h1 {
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 28px;
-        }
-
-        .subtitle {
-            color: #666;
-            margin-bottom: 30px;
-            font-size: 14px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: #333;
-            font-weight: 500;
-            font-size: 14px;
-        }
-
-        .required {
-            color: #e74c3c;
-        }
-
-        input[type="text"],
-        input[type="email"],
-        textarea,
-        select {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 6px;
-            font-size: 14px;
-            font-family: inherit;
-            transition: border-color 0.3s;
-        }
-
-        input[type="text"]:focus,
-        input[type="email"]:focus,
-        textarea:focus,
-        select:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-
-        .metadata-section {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 6px;
-            margin-top: 20px;
-        }
-
-        .metadata-section h3 {
-            font-size: 16px;
-            margin-bottom: 15px;
-            color: #333;
-        }
-
-        .metadata-fields {
-            display: none;
-        }
-
-        .metadata-fields.active {
-            display: block;
-        }
-
-        .metadata-field {
-            margin-bottom: 15px;
-        }
-
-        .help-text {
-            font-size: 12px;
-            color: #666;
-            margin-top: 4px;
-        }
-
-        .button-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 30px;
-        }
-
-        button {
-            flex: 1;
-            padding: 14px 24px;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        button:active {
-            transform: translateY(0);
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .btn-secondary {
-            background: #f0f0f0;
-            color: #333;
-        }
-
-        .alert {
-            padding: 12px 16px;
-            border-radius: 6px;
-            margin-bottom: 20px;
-            display: none;
-        }
-
-        .alert.show {
-            display: block;
-        }
-
-        .alert-success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        .alert-error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-
-        .loading {
-            display: none;
-            text-align: center;
-            padding: 20px;
-        }
-
-        .loading.show {
-            display: block;
-        }
-
-        .spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #667eea;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 10px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .quick-fill {
-            font-size: 12px;
-            color: #667eea;
-            cursor: pointer;
-            text-decoration: underline;
-            margin-left: 8px;
-        }
-
-        .quick-fill:hover {
-            color: #764ba2;
-        }
-
-        .nav-links {
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        .nav-links a {
-            color: #667eea;
-            text-decoration: none;
-            margin-right: 15px;
-            font-size: 14px;
-        }
-
-        .nav-links a:hover {
-            text-decoration: underline;
-        }
-    </style>
+    <title>Create Test Approval Request - Demo - Universal Approval Hub</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
 </head>
-<body>
+<body class="gradient-bg d-flex justify-content-center align-items-center">
     <div class="container">
-        <div class="nav-links">
-            <a href="/">Home</a>
-            <a href="/create-request">Create Request</a>
-            <a href="/status">Status Dashboard</a>
+        <div class="card card-custom">
+            <div class="card-body p-4">
+                <div class="nav-links mb-3 pb-3 border-bottom">
+                    <a href="/">Home</a>
+                    <a href="/create-request">Create Request</a>
+                    <a href="/status">Status Dashboard</a>
+                </div>
+
+                <div class="demo-notice">
+                    <strong>⚠️ Demo Mode</strong>
+                    This form creates <strong>mock</strong> approval requests for testing. In a production environment, requests would come from actual Workday, Concur, or Salesforce webhooks.
+                </div>
+
+                <h1 class="mb-2">📋 Create Test Approval Request</h1>
+                <p class="text-muted mb-4">Mock approval requests for testing and workshops</p>
+
+                <div id="alert" class="alert d-none"></div>
+                <div id="loading" class="text-center d-none">
+                    <div class="spinner"></div>
+                    <p>Creating request...</p>
+                </div>
+
+                <form id="requestForm">
+                    <div class="mb-3">
+                        <label for="request_source" class="form-label">Request Source <span class="text-danger">*</span></label>
+                        <select id="request_source" name="request_source" class="form-select" required>
+                            <option value="">Select a source...</option>
+                            <option value="Workday">Workday (PTO Requests)</option>
+                            <option value="Concur">Concur (Expense Requests)</option>
+                            <option value="Salesforce">Salesforce (Deal Requests)</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="requester_name" class="form-label">Requester Name <span class="text-danger">*</span></label>
+                        <input type="text" id="requester_name" name="requester_name" class="form-control" required placeholder="e.g., John Doe">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="approver_id" class="form-label">Approver Slack User ID <span class="text-danger">*</span></label>
+                        <input type="text" id="approver_id" name="approver_id" class="form-control" required placeholder="e.g., U01234ABCD">
+                        <small class="form-text text-muted">Find your Slack User ID: Click your profile → More → Copy member ID</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="justification_text" class="form-label">Justification <span class="text-danger">*</span></label>
+                        <textarea id="justification_text" name="justification_text" class="form-control" required rows="4" placeholder="Describe the request..."></textarea>
+                    </div>
+
+                    <div class="metadata-section">
+                        <h3 class="h6 mb-3">Metadata (Optional)</h3>
+                        <p class="text-muted small mb-3">Add source-specific metadata. Fields will appear based on selected source.</p>
+                        
+                        <div id="workday-metadata" class="metadata-fields">
+                            <div class="mb-3">
+                                <label for="date_range" class="form-label">Date Range</label>
+                                <input type="text" id="date_range" name="date_range" class="form-control" placeholder="e.g., 2024-02-15 to 2024-02-22">
+                            </div>
+                            <div class="mb-3">
+                                <label for="days_requested" class="form-label">Days Requested</label>
+                                <input type="text" id="days_requested" name="days_requested" class="form-control" placeholder="e.g., 5">
+                            </div>
+                        </div>
+
+                        <div id="concur-metadata" class="metadata-fields">
+                            <div class="mb-3">
+                                <label for="amount" class="form-label">Amount</label>
+                                <input type="text" id="amount" name="amount" class="form-control" placeholder="e.g., 2450.75">
+                            </div>
+                            <div class="mb-3">
+                                <label for="trip_dates" class="form-label">Trip Dates</label>
+                                <input type="text" id="trip_dates" name="trip_dates" class="form-control" placeholder="e.g., 2024-02-05 to 2024-02-07">
+                            </div>
+                            <div class="mb-3">
+                                <label for="pdf_url" class="form-label">PDF Receipt URL</label>
+                                <input type="text" id="pdf_url" name="pdf_url" class="form-control" placeholder="https://example.com/receipt.pdf">
+                            </div>
+                            <div class="mb-3">
+                                <label for="category" class="form-label">Category</label>
+                                <input type="text" id="category" name="category" class="form-control" placeholder="e.g., Travel">
+                            </div>
+                        </div>
+
+                        <div id="salesforce-metadata" class="metadata-fields">
+                            <div class="mb-3">
+                                <label for="customer_name" class="form-label">Customer Name</label>
+                                <input type="text" id="customer_name" name="customer_name" class="form-control" placeholder="e.g., TechCorp Inc.">
+                            </div>
+                            <div class="mb-3">
+                                <label for="deal_value" class="form-label">Deal Value</label>
+                                <input type="text" id="deal_value" name="deal_value" class="form-control" placeholder="e.g., 250000.00">
+                            </div>
+                            <div class="mb-3">
+                                <label for="close_date" class="form-label">Close Date</label>
+                                <input type="text" id="close_date" name="close_date" class="form-control" placeholder="e.g., 2024-03-31">
+                            </div>
+                            <div class="mb-3">
+                                <label for="stage" class="form-label">Stage</label>
+                                <input type="text" id="stage" name="stage" class="form-control" placeholder="e.g., Negotiation">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex mt-4">
+                        <button type="button" class="btn btn-secondary flex-fill" onclick="fillSampleData()">Fill Sample Data</button>
+                        <button type="submit" class="btn btn-gradient flex-fill">Create Request</button>
+                    </div>
+                </form>
+            </div>
         </div>
-        <h1>📋 Create Test Approval Request</h1>
-        <p class="subtitle">Mock approval requests for testing and workshops</p>
-
-        <div id="alert" class="alert"></div>
-        <div id="loading" class="loading">
-            <div class="spinner"></div>
-            <p>Creating request...</p>
-        </div>
-
-        <form id="requestForm">
-            <div class="form-group">
-                <label for="request_source">Request Source <span class="required">*</span></label>
-                <select id="request_source" name="request_source" required>
-                    <option value="">Select a source...</option>
-                    <option value="Workday">Workday (PTO Requests)</option>
-                    <option value="Concur">Concur (Expense Requests)</option>
-                    <option value="Salesforce">Salesforce (Deal Requests)</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="requester_name">Requester Name <span class="required">*</span></label>
-                <input type="text" id="requester_name" name="requester_name" required placeholder="e.g., John Doe">
-            </div>
-
-            <div class="form-group">
-                <label for="approver_id">Approver Slack User ID <span class="required">*</span></label>
-                <input type="text" id="approver_id" name="approver_id" required placeholder="e.g., U01234ABCD">
-                <p class="help-text">Find your Slack User ID: Click your profile → More → Copy member ID</p>
-            </div>
-
-            <div class="form-group">
-                <label for="justification_text">Justification <span class="required">*</span></label>
-                <textarea id="justification_text" name="justification_text" required placeholder="Describe the request..."></textarea>
-            </div>
-
-            <div class="metadata-section">
-                <h3>Metadata (Optional)</h3>
-                <p class="help-text">Add source-specific metadata. Fields will appear based on selected source.</p>
-                
-                <div id="workday-metadata" class="metadata-fields">
-                    <div class="metadata-field">
-                        <label for="date_range">Date Range</label>
-                        <input type="text" id="date_range" name="date_range" placeholder="e.g., 2024-02-15 to 2024-02-22">
-                    </div>
-                    <div class="metadata-field">
-                        <label for="days_requested">Days Requested</label>
-                        <input type="text" id="days_requested" name="days_requested" placeholder="e.g., 5">
-                    </div>
-                </div>
-
-                <div id="concur-metadata" class="metadata-fields">
-                    <div class="metadata-field">
-                        <label for="amount">Amount</label>
-                        <input type="text" id="amount" name="amount" placeholder="e.g., 2450.75">
-                    </div>
-                    <div class="metadata-field">
-                        <label for="trip_dates">Trip Dates</label>
-                        <input type="text" id="trip_dates" name="trip_dates" placeholder="e.g., 2024-02-05 to 2024-02-07">
-                    </div>
-                    <div class="metadata-field">
-                        <label for="pdf_url">PDF Receipt URL</label>
-                        <input type="text" id="pdf_url" name="pdf_url" placeholder="https://example.com/receipt.pdf">
-                    </div>
-                    <div class="metadata-field">
-                        <label for="category">Category</label>
-                        <input type="text" id="category" name="category" placeholder="e.g., Travel">
-                    </div>
-                </div>
-
-                <div id="salesforce-metadata" class="metadata-fields">
-                    <div class="metadata-field">
-                        <label for="customer_name">Customer Name</label>
-                        <input type="text" id="customer_name" name="customer_name" placeholder="e.g., TechCorp Inc.">
-                    </div>
-                    <div class="metadata-field">
-                        <label for="deal_value">Deal Value</label>
-                        <input type="text" id="deal_value" name="deal_value" placeholder="e.g., 250000.00">
-                    </div>
-                    <div class="metadata-field">
-                        <label for="close_date">Close Date</label>
-                        <input type="text" id="close_date" name="close_date" placeholder="e.g., 2024-03-31">
-                    </div>
-                    <div class="metadata-field">
-                        <label for="stage">Stage</label>
-                        <input type="text" id="stage" name="stage" placeholder="e.g., Negotiation">
-                    </div>
-                </div>
-            </div>
-
-            <div class="button-group">
-                <button type="button" class="btn-secondary" onclick="fillSampleData()">Fill Sample Data</button>
-                <button type="submit" class="btn-primary">Create Request</button>
-            </div>
-        </form>
     </div>
 
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         const requestSource = document.getElementById('request_source');
         const workdayMetadata = document.getElementById('workday-metadata');
@@ -358,9 +150,9 @@
         function showAlert(message, type) {
             const alert = document.getElementById('alert');
             alert.textContent = message;
-            alert.className = `alert alert-${type} show`;
+            alert.className = `alert alert-${type === 'success' ? 'success' : 'danger'} d-block`;
             setTimeout(() => {
-                alert.classList.remove('show');
+                alert.classList.add('d-none');
             }, 5000);
         }
 
@@ -398,7 +190,7 @@
 
             const loading = document.getElementById('loading');
             const form = e.target;
-            loading.classList.add('show');
+            loading.classList.remove('d-none');
 
             // Collect form data
             const formData = new FormData(form);
@@ -437,7 +229,7 @@
                 });
 
                 const result = await response.json();
-                loading.classList.remove('show');
+                loading.classList.add('d-none');
 
                 if (response.ok) {
                     showAlert(`✅ Request created successfully! Redirecting to dashboard...`, 'success');
@@ -449,11 +241,10 @@
                     showAlert(`❌ Error: ${result.error || 'Failed to create request'}`, 'error');
                 }
             } catch (error) {
-                loading.classList.remove('show');
+                loading.classList.add('d-none');
                 showAlert(`❌ Error: ${error.message}`, 'error');
             }
         });
     </script>
 </body>
 </html>
-

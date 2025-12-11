@@ -2,14 +2,17 @@
 
 A Proof of Concept (POC) application that demonstrates how Slack, integrated with Heroku, can act as a Universal Approval Hub, centralizing approval requests from various Systems of Record (e.g., Workday, Concur, Salesforce).
 
+> **Note**: This is a demonstration application. The Workday, Concur, and Salesforce integrations are **mocked** - the app accepts requests via a REST API endpoint that simulates webhooks from these systems, but does not actually connect to external services. The application can be extended to integrate with real systems by implementing webhook handlers or API clients for each service.
+
 ## Features
 
 - **Slack Home Tab Dashboard**: Personalized approval dashboard for managers
-- **Multi-Source Support**: Handles approval requests from Workday, Concur, and Salesforce
+- **Multi-Source Support**: Handles approval requests from Workday, Concur, and Salesforce (mocked for demo purposes)
 - **Semantic Search**: Natural language search using Heroku Managed Inference and pgvector
 - **AI-Powered Analysis**: Automatic summarization and risk scoring using Claude
 - **Real-Time Updates**: Instant UI updates when approvals are processed
 - **Secure Webhooks**: Slack request verification and secure API endpoints
+- **Web Interface**: User-friendly forms and status dashboard for creating and viewing test requests
 
 ## Architecture
 

@@ -16,11 +16,11 @@ This document provides a comprehensive overview of the Universal Approval Hub ar
 
 ## System Overview
 
-The Universal Approval Hub is a Flask-based web application that acts as a centralized approval system, integrating with multiple enterprise systems (Workday, Concur, Salesforce) and presenting approval requests through Slack. The application leverages AI/ML capabilities for semantic search, summarization, and risk scoring.
+The Universal Approval Hub is a Flask-based web application that acts as a centralized approval system, mocking integration with multiple enterprise systems (Workday, Concur, Salesforce) and presenting approval requests through Slack. The application leverages AI/ML capabilities for semantic search, summarization, and risk scoring.
 
 ### Key Capabilities
 
-- **Multi-Source Integration**: Accepts approval requests from Workday, Concur, and Salesforce via REST API
+- **Multi-Source Integration**: Accepts approval requests from Workday, Concur, and Salesforce via REST API. These are mocked in this demo application.
 - **Slack Integration**: Displays approval requests in Slack Home Tab with interactive buttons
 - **Web Interface**: User-friendly forms and status dashboard for workshops and demos
 - **AI-Powered Features**: 
@@ -44,11 +44,17 @@ The main application entry point that:
 ### 2. API Routes (`routes/api_routes.py`)
 
 REST API endpoints for external system integration:
-- `POST /api/new-approval`: Accepts approval requests from external systems
+- `POST /api/new-approval`: Accepts approval requests from external systems (or web form)
 - Validates incoming data
 - Generates embeddings and AI summaries
 - Stores requests in database
 - Updates Slack Home Tab
+
+> **Note**: This endpoint simulates webhooks from Workday, Concur, and Salesforce. In a production implementation, you would:
+> - Add webhook handlers for each service (e.g., `/api/webhooks/workday`, `/api/webhooks/concur`)
+> - Implement service-specific authentication and validation
+> - Map service-specific data formats to the unified `ApprovalRequest` model
+> - Handle service-specific error cases and retries
 
 ### 3. Slack Routes (`routes/slack_routes.py`)
 

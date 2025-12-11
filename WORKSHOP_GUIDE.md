@@ -6,6 +6,8 @@ Welcome to the Universal Approval Hub workshop! This guide will walk you through
 
 The Universal Approval Hub is a proof-of-concept application that centralizes approval requests from multiple enterprise systems (Workday, Concur, Salesforce) into a single Slack interface. It uses AI-powered features like semantic search and automatic summarization to help managers make faster, more informed decisions.
 
+> **Note**: This is a demonstration application. The Workday, Concur, and Salesforce integrations are **mocked** - requests are created through a web form that simulates webhooks from these systems. In a production implementation, the app would connect to the actual Workday, Concur, and Salesforce APIs to receive real approval requests.
+
 ## Prerequisites
 
 Before you begin, ensure you have:
