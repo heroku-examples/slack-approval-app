@@ -1,346 +1,592 @@
-# Universal Approval Hub - Workshop Attendee Guide
+# Universal Approval Hub - Zero to Hero(ku) Workshop Guide
 
-Welcome to the Universal Approval Hub workshop! This guide will walk you through how to use the application and what to expect.
+Welcome to the Universal Approval Hub workshop! This comprehensive guide will take you from zero to a fully deployed application on Heroku with Slack integration. Follow along step-by-step to build your own approval hub.
 
-## What is the Universal Approval Hub?
+## Workshop Overview
 
-The Universal Approval Hub is a proof-of-concept application that centralizes approval requests from multiple enterprise systems (Workday, Concur, Salesforce) into a single Slack interface. It uses AI-powered features like semantic search and automatic summarization to help managers make faster, more informed decisions.
+**Duration**: 60-90 minutes  
+**Goal**: Deploy a fully functional approval hub that integrates Slack with Heroku, demonstrating AI-powered approval workflows
+
+**What You'll Build**:
+- A Flask application deployed on Heroku
+- Slack app with Home Tab interface
+- PostgreSQL database with pgvector for semantic search
+- AI-powered features using Heroku Managed Inference
+- Web interface for creating and viewing approval requests
 
 > **Note**: This is a demonstration application. The Workday, Concur, and Salesforce integrations are **mocked** - requests are created through a web form that simulates webhooks from these systems. In a production implementation, the app would connect to the actual Workday, Concur, and Salesforce APIs to receive real approval requests.
 
 ## Prerequisites
 
-Before you begin, ensure you have:
+Before starting, ensure you have:
 
-- ✅ Access to the Slack workspace where the app is installed
-- ✅ The Universal Approval Hub Slack app added to your workspace
-- ✅ A Slack account with appropriate permissions (the app should appear in your Apps section)
+- ✅ A computer with internet access
+- ✅ A GitHub account (free)
+- ✅ A Heroku account (free tier works)
+- ✅ A Slack account (we'll create a Sandbox workspace)
+- ✅ Git installed on your computer
+- ✅ Heroku CLI installed ([download here](https://devcenter.heroku.com/articles/heroku-cli))
+- ✅ Basic familiarity with command line (help will be provided)
 
-## Getting Started
+## Part 1: Set Up Slack Sandbox Workspace (15 minutes)
 
-### Step 1: Open the Slack App Home Tab
+### Step 1: Create a Slack Sandbox Workspace
 
-1. Open Slack in your browser or desktop app
-2. In the left sidebar, find **"Universal Approval Hub"** under **Apps** (or search for it)
-3. Click on the app name to open it
-4. You should see the **Home Tab** with the approval dashboard
+1. **Go to Slack Developer Portal**:
+   - Visit [api.slack.com](https://api.slack.com)
+   - Click **"Get Started"** or **"Sign In"**
 
-**What you'll see:**
-- A header saying "📋 Approval Requests"
-- Filter controls to filter by source system (Workday, Concur, Salesforce)
-- A semantic search input field
-- Approval request cards (if any are pending)
+2. **Create a Sandbox Workspace**:
+   - If you don't have a workspace, Slack will prompt you to create one
+   - Click **"Create a Slack Workspace"**
+   - Follow the prompts to create your workspace
+   - **Workspace name suggestion**: "Approval Hub Workshop" or "Demo Workspace"
 
-### Step 2: Understanding the Interface
+3. **Verify Your Workspace**:
+   - You should see your workspace in Slack
+   - Note your workspace URL (e.g., `your-workspace.slack.com`)
 
-The Home Tab displays:
+### Step 2: Create a Slack App
 
-- **Filter by Source**: A dropdown to filter requests by system (All, Workday, Concur, Salesforce)
-- **Semantic Search**: A text input where you can search using natural language (e.g., "vacation requests" or "high-value deals")
-- **Approval Cards**: Each card shows:
-  - Requester name
-  - Request type and details (varies by source)
-  - AI-generated summary (if available)
-  - Justification text
-  - Approve/Reject buttons
+1. **Navigate to Slack Apps**:
+   - Go to [api.slack.com/apps](https://api.slack.com/apps)
+   - Click **"Create New App"**
 
-## Creating Test Requests
+2. **Create App from Scratch**:
+   - Select **"From scratch"**
+   - **App Name**: `Universal Approval Hub` (or `Sample Approval App`)
+   - **Pick a workspace**: Select your Sandbox workspace
+   - Click **"Create App"**
 
-Before you can test the approval flow, you'll need to create some test approval requests. The easiest way is through the web interface:
+3. **Note Your App Credentials**:
+   - You'll be taken to the app's Basic Information page
+   - Keep this page open - you'll need information from here later
 
-1. **Open your browser** and go to:
+## Part 2: Configure Slack App (20 minutes)
+
+### Step 3: Enable Home Tab
+
+1. **Open App Home Settings**:
+   - In the left sidebar, click **"App Home"** (under **Features**)
+
+2. **Enable Home Tab**:
+   - Under **"Home Tab"**, toggle the switch to **ON**
+   - Under **"Show Tabs"**, ensure **"Home Tab"** is checked
+   - **Important**: Set Home Tab to **"Publishable"** (not "Read-only")
+   - Click **"Save Changes"**
+
+### Step 4: Configure OAuth & Permissions
+
+1. **Open OAuth & Permissions**:
+   - Click **"OAuth & Permissions"** in the left sidebar (under **Features**)
+
+2. **Add Bot Token Scopes**:
+   - Scroll down to **"Scopes"** → **"Bot Token Scopes"**
+   - Click **"Add New Scope"** and add each of these:
+     - `chat:write` - Required for publishing Home Tab views and sending messages
+     - `users:read` - Required for reading user information
+     - `users:read.email` - Optional, for reading user emails
+
+3. **Install App to Workspace**:
+   - Scroll to the top of the page
+   - Click **"Install to Workspace"**
+   - Review the permissions and click **"Allow"**
+
+4. **Copy Bot Token**:
+   - After installation, you'll see **"Bot User OAuth Token"** at the top
+   - **Copy this token** (starts with `xoxb-`) - you'll need it later
+   - Save it somewhere safe (we'll add it to Heroku)
+
+### Step 5: Get Signing Secret
+
+1. **Open Basic Information**:
+   - Click **"Basic Information"** in the left sidebar
+
+2. **Copy Signing Secret**:
+   - Scroll down to **"App Credentials"**
+   - Under **"Signing Secret"**, click **"Show"**
+   - **Copy the secret** - you'll need it later
+   - Save it somewhere safe
+
+### Step 6: Configure Event Subscriptions
+
+1. **Open Event Subscriptions**:
+   - Click **"Event Subscriptions"** in the left sidebar (under **Features**)
+
+2. **Enable Events**:
+   - Toggle **"Enable Events"** to **ON**
+
+3. **Set Request URL** (We'll come back to this):
+   - For now, leave this blank
+   - We'll set it after deploying to Heroku
+   - The URL will be: `https://your-app.herokuapp.com/slack/events`
+
+4. **Subscribe to Bot Events**:
+   - Scroll down to **"Subscribe to bot events"**
+   - Click **"Add Bot User Event"**
+   - Add: `app_home_opened`
+   - Click **"Save Changes"**
+
+### Step 7: Configure Interactive Components
+
+1. **Open Interactivity**:
+   - Click **"Interactivity"** in the left sidebar (under **Features**)
+
+2. **Enable Interactivity**:
+   - Toggle **"Interactivity"** to **ON**
+
+3. **Set Request URL** (We'll come back to this):
+   - For now, leave this blank
+   - We'll set it after deploying to Heroku
+   - The URL will be: `https://your-app.herokuapp.com/slack/interactive`
+
+4. **Save Changes**:
+   - Click **"Save Changes"**
+
+> **Note**: We'll complete the Request URLs after deploying to Heroku. Keep the Slack app configuration page open.
+
+## Part 3: Set Up Local Development Environment (10 minutes)
+
+### Step 8: Install Prerequisites
+
+1. **Install Git** (if not already installed):
+   - Download from [git-scm.com](https://git-scm.com/downloads)
+   - Verify installation: `git --version`
+
+2. **Install Heroku CLI** (if not already installed):
+   - Download from [devcenter.heroku.com/articles/heroku-cli](https://devcenter.heroku.com/articles/heroku-cli)
+   - Verify installation: `heroku --version`
+
+3. **Install Python 3.11+** (if not already installed):
+   - Download from [python.org](https://www.python.org/downloads/)
+   - Verify installation: `python3 --version`
+
+### Step 9: Clone the Repository
+
+1. **Get the Repository URL**:
+   - Ask your facilitator for the GitHub repository URL
+   - Or use: `https://github.com/your-org/UniversalApprovalHub.git`
+
+2. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/your-org/UniversalApprovalHub.git
+   cd UniversalApprovalHub
    ```
-   https://your-app.herokuapp.com/create-request
+
+3. **Verify Files**:
+   ```bash
+   ls -la
    ```
-   (Ask your facilitator for the exact URL)
+   You should see files like `app.py`, `requirements.txt`, `Procfile`, etc.
 
-2. **Fill out the form:**
-   - Select a request source (Workday, Concur, or Salesforce)
-   - Enter a requester name
-   - Enter your Slack User ID (to find it: click your profile → More → Copy member ID)
-   - Add justification text
-   - Optionally click "Fill Sample Data" to auto-fill example data
+## Part 4: Deploy to Heroku (15 minutes)
 
-3. **Click "Create Request"** - the request will appear in your Slack Home Tab!
-4. **You'll be redirected to the Status Dashboard** where you can see all requests and their statuses
+### Step 10: Log In to Heroku
 
-You can create multiple requests to test different scenarios. Each request type (Workday, Concur, Salesforce) displays different information in the approval cards.
-
-### Viewing Request Status
-
-After creating requests, you can view them in the **Status Dashboard**:
-
-1. **Open your browser** and go to:
+1. **Log In via CLI**:
+   ```bash
+   heroku login
    ```
-   https://your-app.herokuapp.com/status
+   - This will open a browser window
+   - Click **"Log in"** in the browser
+   - Return to the terminal
+
+2. **Verify Login**:
+   ```bash
+   heroku auth:whoami
    ```
-   (Ask your facilitator for the exact URL)
+   - Should display your Heroku email
 
-2. **View all requests** - You'll see:
-   - Statistics showing pending, approved, and rejected counts
-   - All requests with their current status
-   - Filter options to view by status, source, or approver
-   - Request details including metadata and AI summaries
+### Step 11: Create Heroku App
 
-3. **Watch status updates** - The dashboard auto-refreshes every 10 seconds, so you can see status changes in real-time after approving/rejecting in Slack!
+1. **Create App**:
+   ```bash
+   heroku create your-app-name
+   ```
+   - Replace `your-app-name` with your desired name (must be unique)
+   - Example: `heroku create approval-hub-workshop-2024`
+   - Note the app URL (e.g., `https://your-app-name.herokuapp.com`)
 
-## Trying Out the Application
+2. **Verify App Created**:
+   ```bash
+   heroku apps:info
+   ```
 
-### Scenario 1: Viewing Approval Requests
+### Step 12: Add Heroku Postgres
 
-1. **Open the Home Tab** (as described in Step 1)
-2. If there are pending requests, you'll see them as cards
-3. Each card shows different information based on the source:
-   - **Workday**: PTO requests with date ranges
-   - **Concur**: Expense requests with amounts and PDF links
-   - **Salesforce**: Deal requests with customer names, deal values, and risk scores
+1. **Add Postgres Add-on**:
+   ```bash
+   heroku addons:create heroku-postgresql:mini --app your-app-name
+   ```
+   - Replace `your-app-name` with your actual app name
+   - This automatically sets `DATABASE_URL` environment variable
 
-**What to look for:**
-- Request details are clearly displayed
-- AI summaries provide quick context
-- Risk scores help identify high-priority items
+2. **Verify Database**:
+   ```bash
+   heroku addons --app your-app-name
+   ```
+   - You should see `heroku-postgresql:mini` listed
 
-### Scenario 2: Filtering Requests
+### Step 13: Add Heroku Managed Inference (Optional but Recommended)
 
-1. In the Home Tab, find the **"Filter by Source"** dropdown
-2. Select a specific source (e.g., "Workday")
-3. The list will update to show only requests from that source
-4. Select "All" to see all requests again
+1. **Add Managed Inference Add-on**:
+   ```bash
+   heroku addons:create heroku-managed-inference:starter --app your-app-name
+   ```
+   - This enables AI features (semantic search, summaries, risk scoring)
+   - The app works without it, but AI features will be disabled
 
-**Expected behavior:**
-- The list updates immediately
-- Only requests matching the selected source are shown
+2. **Get API Credentials**:
+   ```bash
+   heroku config --app your-app-name | grep INFERENCE
+   ```
+   - Note the `HEROKU_MANAGED_INFERENCE_API_URL` and `HEROKU_MANAGED_INFERENCE_API_KEY`
+   - These are automatically set by the add-on
 
-### Scenario 3: Semantic Search
+### Step 14: Set Environment Variables
 
-1. In the Home Tab, find the **"Semantic Search"** input field
-2. Type a natural language query, such as:
-   - "vacation requests"
-   - "high-value expenses"
-   - "urgent deals"
-   - "requests from last month"
-3. The list will update to show matching requests based on semantic similarity
+1. **Set Slack Configuration**:
+   ```bash
+   heroku config:set SLACK_BOT_TOKEN=xoxb-your-token-here --app your-app-name
+   heroku config:set SLACK_SIGNING_SECRET=your-signing-secret-here --app your-app-name
+   ```
+   - Replace with the values you copied from Slack earlier
 
-**What to expect:**
-- The search uses AI to understand the meaning of your query
-- Results are ranked by relevance, not just keyword matching
-- You can search for concepts, not just exact words
+2. **Set Secret Key**:
+   ```bash
+   heroku config:set SECRET_KEY=$(python3 -c 'import secrets; print(secrets.token_hex(32))') --app your-app-name
+   ```
 
-**Note:** Semantic search requires the Heroku Managed Inference add-on to be configured. If it's not available, the search may not work, but the rest of the app will function normally.
+3. **Verify All Config Vars**:
+   ```bash
+   heroku config --app your-app-name
+   ```
+   - You should see:
+     - `DATABASE_URL` (automatically set)
+     - `SLACK_BOT_TOKEN`
+     - `SLACK_SIGNING_SECRET`
+     - `SECRET_KEY`
+     - `HEROKU_MANAGED_INFERENCE_API_URL` (if add-on added)
+     - `HEROKU_MANAGED_INFERENCE_API_KEY` (if add-on added)
 
-### Scenario 4: Approving a Request
+### Step 15: Deploy to Heroku
 
-1. Find an approval request card in the Home Tab
-2. Review the request details, AI summary, and justification
-3. Click the **"✅ Approve"** button (green button)
-4. The request will be marked as approved
-5. The Home Tab will refresh automatically
-6. You'll receive a confirmation message in Slack
+1. **Deploy Application**:
+   ```bash
+   git push heroku main
+   ```
+   - Or if your default branch is `master`: `git push heroku master`
+   - This will build and deploy your application
 
-**What happens:**
-- The request status changes to "Approved" in the database
-- The request disappears from the pending list
-- A confirmation message appears in your Slack DMs
+2. **Watch the Build**:
+   - You'll see build output in the terminal
+   - Wait for "Build succeeded" message
 
-### Scenario 5: Rejecting a Request
+3. **Verify Deployment**:
+   ```bash
+   heroku open --app your-app-name
+   ```
+   - Should open your app in the browser
+   - You should see the landing page
 
-1. Find an approval request card
-2. Review the request details
-3. Click the **"❌ Reject"** button (red button)
-4. The request will be marked as rejected
-5. The Home Tab will refresh automatically
-6. You'll receive a confirmation message
+4. **Check Health**:
+   ```bash
+   curl https://your-app-name.herokuapp.com/health
+   ```
+   - Should return: `{"status":"healthy","service":"universal-approval-hub"}`
 
-**What happens:**
-- The request status changes to "Rejected" in the database
-- The request disappears from the pending list
-- A confirmation message appears in your Slack DMs
+### Step 16: Complete Slack Configuration
 
-## Understanding Request Types
+Now that your app is deployed, complete the Slack configuration:
 
-### Workday Requests (PTO)
+1. **Update Event Subscriptions URL**:
+   - Go back to [api.slack.com/apps](https://api.slack.com/apps)
+   - Select your app
+   - Click **"Event Subscriptions"**
+   - Set **Request URL** to: `https://your-app-name.herokuapp.com/slack/events`
+   - Slack will verify the URL - you should see a green checkmark ✅
+   - Click **"Save Changes"**
 
-**What you'll see:**
-- Requester name
-- Date range for the PTO request
-- AI summary of the request
-- Justification text
+2. **Update Interactive Components URL**:
+   - Click **"Interactivity"**
+   - Set **Request URL** to: `https://your-app-name.herokuapp.com/slack/interactive`
+   - Click **"Save Changes"**
 
-**Example:**
-```
-John Doe requested PTO
-📅 Date Range: 2024-01-15 to 2024-01-19
-Summary: Employee requesting 5 days of vacation for personal time
-Justification: Need to take time off for family event
-```
+## Part 5: Test the Application (10 minutes)
 
-### Concur Requests (Expenses)
+### Step 17: Test Slack Integration
 
-**What you'll see:**
-- Requester name
-- Expense amount
-- Link to PDF receipt (if available)
-- AI summary
-- Justification text
+1. **Open Slack**:
+   - Go to your Sandbox workspace
+   - In the left sidebar, find **"Universal Approval Hub"** under **Apps**
+   - Click on the app name
 
-**Example:**
-```
-Jane Smith submitted expense
-💰 Amount: $1,250.00
-📄 View PDF
-Summary: Business travel expense for client meeting
-Justification: Travel and accommodation for Q1 planning meeting
-```
+2. **Verify Home Tab**:
+   - You should see the Home Tab with "📋 Approval Requests"
+   - It may be empty initially (no requests yet)
 
-### Salesforce Requests (Deals)
+3. **Find Your Slack User ID**:
+   - Click on your profile picture/name
+   - Click **"More"** → **"Copy member ID"**
+   - Save this ID (starts with `U`) - you'll need it to create test requests
 
-**What you'll see:**
-- Requester name
-- Customer name
-- Deal value
-- Risk score (0-10)
-- AI summary
-- Justification text
+### Step 18: Create Test Request via Web Interface
 
-**Example:**
-```
-Bob Johnson submitted deal
-👤 Customer: Acme Corporation
-💵 Deal Value: $50,000.00
-⚠️ Risk Score: 3/10
-Summary: Standard enterprise deal with established customer
-Justification: Renewal contract with existing client, low risk
-```
+1. **Open Web Interface**:
+   - Go to: `https://your-app-name.herokuapp.com/create-request`
+
+2. **Fill Out the Form**:
+   - **Request Source**: Select "Workday"
+   - **Requester Name**: Enter your name
+   - **Approver Slack User ID**: Paste your Slack User ID (from Step 17)
+   - **Justification**: Enter "Test PTO request for workshop"
+   - **Metadata**: Click "Fill Sample Data" to auto-fill, or enter manually
+     - Date Range: `2024-02-15 to 2024-02-22`
+
+3. **Create Request**:
+   - Click **"Create Request"**
+   - You'll be redirected to the Status Dashboard
+   - The request should appear with "Pending" status
+
+4. **Check Slack**:
+   - Go back to Slack
+   - Open the Universal Approval Hub app Home Tab
+   - You should see your request!
+
+### Step 19: Test Approval Flow
+
+1. **Approve in Slack**:
+   - In the Slack Home Tab, find your test request
+   - Click **"✅ Approve"** button
+   - The request should disappear from the pending list
+   - You'll receive a confirmation DM
+
+2. **Check Status Dashboard**:
+   - Go to: `https://your-app-name.herokuapp.com/status`
+   - You should see the request status changed to "Approved"
+   - The dashboard auto-refreshes every 10 seconds
+
+3. **Create More Test Requests**:
+   - Create requests from different sources (Concur, Salesforce)
+   - Test filtering and semantic search
+   - Try rejecting a request
+
+## Part 6: Explore Features (15 minutes)
+
+### Step 20: Explore the Web Interface
+
+1. **Landing Page** (`/`):
+   - Overview of the application
+   - Links to create requests and view dashboard
+
+2. **Create Request** (`/create-request`):
+   - Try creating different types of requests
+   - Use "Fill Sample Data" for quick testing
+   - Notice how metadata fields change based on source
+
+3. **Status Dashboard** (`/status`):
+   - View all requests and their statuses
+   - Try filtering by status, source, or approver
+   - Watch real-time updates
+
+### Step 21: Explore Slack Features
+
+1. **Home Tab**:
+   - Filter by source (Workday, Concur, Salesforce)
+   - Try semantic search (if Managed Inference is configured)
+   - Approve/reject requests
+
+2. **Real-Time Updates**:
+   - Create a request in the web interface
+   - Watch it appear in Slack Home Tab
+   - Approve it in Slack
+   - Watch it update in the Status Dashboard
+
+### Step 22: Test AI Features (If Managed Inference Added)
+
+1. **Semantic Search**:
+   - In Slack Home Tab, use the semantic search field
+   - Try queries like:
+     - "vacation requests"
+     - "high-value expenses"
+     - "urgent deals"
+
+2. **AI Summaries**:
+   - Create requests with different justifications
+   - Check the AI-generated summaries in the request cards
+   - Notice risk scores for Salesforce deals
 
 ## Troubleshooting
 
-### I don't see the app in Slack
+### App Won't Deploy
 
-**Solution:**
-- Check if the app has been installed in your workspace
-- Ask your workshop facilitator to verify the app installation
-- Try searching for "Universal Approval Hub" in Slack
+**Check build logs**:
+```bash
+heroku logs --tail --app your-app-name
+```
 
-### The Home Tab is empty
+**Common issues**:
+- Missing `requirements.txt` or `Procfile`
+- Python version mismatch (check `runtime.txt`)
+- Build timeout (try again)
 
-**Possible reasons:**
-- There are no pending approval requests assigned to you
-- The app may need sample data to be created
-- Ask your facilitator to create a test request
+### Slack Home Tab Not Showing
 
-**Solution:**
-- Ask your facilitator to submit a test approval request via the API
-- Check if you're logged in as the correct user (requests are assigned by Slack User ID)
+1. **Verify Home Tab is enabled**:
+   - Go to Slack app settings → App Home
+   - Ensure Home Tab is ON and Publishable
 
-### Semantic search isn't working
+2. **Check Heroku logs**:
+   ```bash
+   heroku logs --tail --app your-app-name
+   ```
+   - Look for errors about `SLACK_BOT_TOKEN` or signature verification
 
-**Possible reasons:**
-- Heroku Managed Inference add-on may not be configured
-- The search feature requires the add-on to generate embeddings
+3. **Verify environment variables**:
+   ```bash
+   heroku config --app your-app-name
+   ```
 
-**Solution:**
-- The app will still work without semantic search
-- You can still filter by source and approve/reject requests
-- Ask your facilitator if the add-on is configured
+### Database Errors
 
-### Buttons don't respond
+1. **Check database connection**:
+   ```bash
+   heroku pg:info --app your-app-name
+   ```
 
-**Possible reasons:**
-- Network connectivity issues
-- The app may be experiencing errors
+2. **Verify DATABASE_URL is set**:
+   ```bash
+   heroku config:get DATABASE_URL --app your-app-name
+   ```
 
-**Solution:**
-- Refresh the Home Tab
-- Check the browser console for errors (if using web Slack)
-- Ask your facilitator to check the application logs
+3. **Check logs for database errors**:
+   ```bash
+   heroku logs --tail --app your-app-name | grep -i database
+   ```
 
-### I see an error message
+### Web Interface Not Loading
 
-**What to do:**
-- Note the error message text
-- Try refreshing the Home Tab
-- If the error persists, inform your facilitator
-- Common errors:
-  - "Invalid signature" - Slack verification issue (contact facilitator)
-  - "Request not found" - Request may have been deleted
-  - "Unauthorized" - You're not the assigned approver for this request
+1. **Check app status**:
+   ```bash
+   heroku ps --app your-app-name
+   ```
 
-## What to Expect During the Workshop
+2. **Restart the app**:
+   ```bash
+   heroku restart --app your-app-name
+   ```
 
-### Initial Setup (5 minutes)
+3. **Check logs**:
+   ```bash
+   heroku logs --tail --app your-app-name
+   ```
 
-- Facilitator will ensure the app is installed
-- Sample data may be created
-- You'll be guided to open the Home Tab
+## Workshop Checklist
 
-### Exploration Phase (10-15 minutes)
+Use this checklist to track your progress:
 
-- Try opening the Home Tab
-- Explore the interface
-- Review any sample approval requests
-- Try filtering by source
+### Slack Setup
+- [ ] Created Slack Sandbox workspace
+- [ ] Created Slack app
+- [ ] Enabled Home Tab (Publishable)
+- [ ] Added Bot Token Scopes (`chat:write`, `users:read`)
+- [ ] Installed app to workspace
+- [ ] Copied Bot Token (`xoxb-...`)
+- [ ] Copied Signing Secret
+- [ ] Configured Event Subscriptions (URL set after deployment)
+- [ ] Configured Interactive Components (URL set after deployment)
 
-### Interactive Phase (10-15 minutes)
+### Local Setup
+- [ ] Installed Git
+- [ ] Installed Heroku CLI
+- [ ] Installed Python 3.11+
+- [ ] Cloned repository
+- [ ] Verified files are present
 
-- Try semantic search (if available)
-- Approve or reject a test request
-- Observe the real-time updates
-- Check your Slack DMs for confirmation messages
+### Heroku Deployment
+- [ ] Logged in to Heroku
+- [ ] Created Heroku app
+- [ ] Added Heroku Postgres add-on
+- [ ] Added Heroku Managed Inference add-on (optional)
+- [ ] Set SLACK_BOT_TOKEN
+- [ ] Set SLACK_SIGNING_SECRET
+- [ ] Set SECRET_KEY
+- [ ] Deployed application
+- [ ] Verified deployment (health check passes)
 
-### Discussion Phase (10 minutes)
+### Slack Configuration (Post-Deployment)
+- [ ] Set Event Subscriptions Request URL
+- [ ] Verified Event Subscriptions URL (green checkmark)
+- [ ] Set Interactive Components Request URL
+- [ ] Saved all changes
 
-- Share your experience with the group
-- Discuss the AI features (semantic search, summaries, risk scores)
-- Provide feedback on the user experience
-
-## Key Features to Explore
-
-1. **Multi-Source Integration**: See how requests from different systems appear in one place
-2. **AI Summarization**: Notice how AI provides quick context for each request
-3. **Risk Scoring**: Understand how risk scores help prioritize decisions
-4. **Semantic Search**: Experience natural language search capabilities
-5. **Real-Time Updates**: See how the interface updates immediately after actions
-6. **Slack Integration**: Experience how Slack becomes a unified approval interface
-
-## Tips for Best Experience
-
-- **Use semantic search creatively**: Try different phrasings to see how AI understands your intent
-- **Compare request types**: Notice how different sources (Workday, Concur, Salesforce) display different information
-- **Check AI summaries**: Read the AI-generated summaries to see how they help you understand requests quickly
-- **Look at risk scores**: For Salesforce deals, use risk scores to identify high-priority items
-- **Test real-time updates**: Approve or reject a request and watch the Home Tab update automatically
-
-## Questions to Consider
-
-As you explore the application, think about:
-
-1. **User Experience**: How intuitive is the interface? What would make it better?
-2. **AI Features**: How useful are the AI summaries and risk scores? Do they help you make decisions faster?
-3. **Semantic Search**: How well does natural language search work? Can you find what you're looking for?
-4. **Integration**: How valuable is having all approvals in one place vs. checking multiple systems?
-5. **Real-World Application**: How would this work in your organization? What challenges might you face?
+### Testing
+- [ ] Opened Slack Home Tab
+- [ ] Found Slack User ID
+- [ ] Created test request via web interface
+- [ ] Verified request appears in Slack
+- [ ] Approved/rejected a request in Slack
+- [ ] Verified status updates in dashboard
+- [ ] Tested filtering and search features
 
 ## Next Steps
 
-After the workshop, you can:
+After completing the workshop:
 
-- **Provide Feedback**: Share your thoughts with the facilitator
-- **Explore Further**: Ask questions about the architecture and implementation
-- **Consider Use Cases**: Think about how this could apply to your organization
-- **Review Documentation**: Check the ARCHITECTURE.md document for technical details
+1. **Explore the Code**:
+   - Review `app.py` to understand the Flask application
+   - Check `routes/` to see API and Slack endpoints
+   - Look at `models.py` to understand the data structure
 
-## Support
+2. **Customize**:
+   - Modify request types
+   - Add new metadata fields
+   - Customize the UI colors and branding
 
-If you encounter any issues during the workshop:
+3. **Extend**:
+   - Review `EXTENDING.md` to learn how to integrate with real services
+   - Add webhook handlers for Workday, Concur, or Salesforce
+   - Implement additional features
 
-1. **Check this guide** for troubleshooting steps
-2. **Ask your facilitator** for assistance
-3. **Check the application logs** (if you have access)
-4. **Review the README.md** for technical setup information
+4. **Share**:
+   - Share your app URL with others
+   - Demonstrate the approval flow
+   - Discuss use cases and improvements
 
-## Summary
+## Resources
 
-The Universal Approval Hub demonstrates how modern AI and integration technologies can transform enterprise workflows. By centralizing approvals in Slack and using AI to provide context, managers can make faster, more informed decisions while staying in their primary communication tool.
+- **Slack API Documentation**: [api.slack.com](https://api.slack.com)
+- **Heroku Documentation**: [devcenter.heroku.com](https://devcenter.heroku.com)
+- **Flask Documentation**: [flask.palletsprojects.com](https://flask.palletsprojects.com)
+- **Project README**: See `README.md` for detailed documentation
+- **Architecture Guide**: See `ARCHITECTURE.md` for technical details
 
-Enjoy exploring the application, and don't hesitate to ask questions!
+## Workshop Summary
 
+Congratulations! You've successfully:
+
+✅ Set up a Slack Sandbox workspace  
+✅ Created and configured a Slack app  
+✅ Deployed a Flask application to Heroku  
+✅ Connected PostgreSQL database  
+✅ Integrated Slack with your application  
+✅ Tested the complete approval workflow  
+
+You now have a fully functional approval hub that demonstrates:
+- Multi-source approval centralization
+- AI-powered features (semantic search, summaries, risk scoring)
+- Real-time updates between Slack and web interface
+- Modern web UI with Bootstrap
+- Production-ready deployment on Heroku
+
+## Questions and Discussion
+
+Take time to discuss:
+
+1. **Architecture**: How does the application work? What are the key components?
+2. **AI Features**: How do embeddings and semantic search work?
+3. **Integration**: How would you extend this to real Workday/Concur/Salesforce?
+4. **Use Cases**: Where could this pattern be applied in your organization?
+5. **Improvements**: What features would make this more useful?
+
+Enjoy your new approval hub! 🎉
