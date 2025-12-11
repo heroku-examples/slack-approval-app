@@ -22,7 +22,7 @@ Before starting, ensure you have:
 
 - ✅ A computer with internet access
 - ✅ A GitHub account (free)
-- ✅ A Heroku account (free tier works)
+- ✅ A Heroku account
 - ✅ A Slack account (we'll create a Sandbox workspace)
 - ✅ Git installed on your computer
 - ✅ Heroku CLI installed ([download here](https://devcenter.heroku.com/articles/heroku-cli))
@@ -204,7 +204,7 @@ Before starting, ensure you have:
    heroku create your-app-name
    ```
    - Replace `your-app-name` with your desired name (must be unique)
-   - Example: `heroku create approval-hub-workshop-2024`
+   - Example: `heroku create approval-hub-workshop-2025-username`
    - Note the app URL (e.g., `https://your-app-name.herokuapp.com`)
 
 2. **Verify App Created**:
@@ -216,7 +216,7 @@ Before starting, ensure you have:
 
 1. **Add Postgres Add-on**:
    ```bash
-   heroku addons:create heroku-postgresql:mini --app your-app-name
+   heroku addons:create heroku-postgresql:essential-0 --app your-app-name
    ```
    - Replace `your-app-name` with your actual app name
    - This automatically sets `DATABASE_URL` environment variable
@@ -225,7 +225,7 @@ Before starting, ensure you have:
    ```bash
    heroku addons --app your-app-name
    ```
-   - You should see `heroku-postgresql:mini` listed
+   - You should see `heroku-postgresql:essential-0` listed
 
 ### Step 13: Add Heroku Managed Inference (Optional but Recommended)
 
