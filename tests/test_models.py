@@ -39,7 +39,9 @@ def test_approval_request_to_dict(app, sample_approval_request):
     :type sample_approval_request: ApprovalRequest
     """
     with app.app_context():
-        data = sample_approval_request.to_dict()
+        # Re-query to get fresh instance in this session
+        request = ApprovalRequest.query.get(sample_approval_request.id)
+        data = request.to_dict()
         assert 'id' in data
         assert 'request_source' in data
         assert 'requester_name' in data
@@ -56,7 +58,9 @@ def test_approval_request_status_update(app, sample_approval_request):
     :type sample_approval_request: ApprovalRequest
     """
     with app.app_context():
-        sample_approval_request.status = 'Approved'
+        # Re-query to get fresh instance in this session
+        request = ApprovalRequest.query.get(sample_approval_request.id)
+        request.status = 'Approved'
         db.session.commit()
 
         updated = ApprovalRequest.query.get(sample_approval_request.id)

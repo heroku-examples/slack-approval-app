@@ -8,6 +8,7 @@ import os
 import logging
 from flask import Flask, render_template
 from dotenv import load_dotenv
+from flasgger import Swagger
 
 from config import Config
 from database import db, init_db
@@ -21,6 +22,54 @@ load_dotenv()
 # Initialize Flask app
 app = Flask(__name__)
 app.config.from_object(Config)
+
+# Configure Swagger/OpenAPI documentation
+swagger_config = {
+    "headers": [],
+    "specs": [
+        {
+            "endpoint": "apispec",
+            "route": "/apispec.json",
+            "rule_filter": lambda rule: True,
+            "model_filter": lambda tag: True,
+        }
+    ],
+    "static_url_path": "/flasgger_static",
+    "swagger_ui": True,
+    "specs_route": "/api-docs"
+}
+
+swagger_template = {
+    "swagger": "2.0",
+    "info": {
+        "title": "Universal Approval Hub API",
+        "description": "REST API for the Universal Approval Hub - a centralized approval system that integrates with Slack. This API accepts approval requests from external systems (Workday, Concur, Salesforce) and manages the approval workflow.",
+        "version": "1.0.0",
+        "contact": {
+            "name": "API Support",
+            "email": "support@example.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+        }
+    },
+    "host": os.environ.get('SWAGGER_HOST', 'localhost:5000'),
+    "basePath": "/",
+    "schemes": ["http", "https"],
+    "tags": [
+        {
+            "name": "Health",
+            "description": "Health check endpoints"
+        },
+        {
+            "name": "Approval Requests",
+            "description": "Endpoints for managing approval requests"
+        }
+    ]
+}
+
+swagger = Swagger(app, config=swagger_config, template=swagger_template)
 
 # Setup logging
 setup_logging(app.config.get('LOG_LEVEL', 'INFO'))
@@ -82,9 +131,22 @@ def bad_request(error) -> tuple[dict, int]:
 @app.route('/health')
 def health_check() -> tuple[dict, int]:
     """Health check endpoint for monitoring.
-
-    :return: JSON response with status and HTTP 200
-    :rtype: tuple[dict, int]
+    
+    ---
+    tags:
+      - Health
+    responses:
+      200:
+        description: Service is healthy
+        schema:
+          type: object
+          properties:
+            status:
+              type: string
+              example: healthy
+            service:
+              type: string
+              example: universal-approval-hub
     """
     return {'status': 'healthy', 'service': 'universal-approval-hub'}, 200
 

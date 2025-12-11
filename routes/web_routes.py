@@ -33,13 +33,81 @@ def status_dashboard() -> str:
 def get_requests() -> tuple[Dict[str, Any], int]:
     """API endpoint to get all approval requests with optional filtering.
 
-    Query parameters:
-    - status: Filter by status (Pending, Approved, Rejected)
-    - source: Filter by request source (Workday, Concur, Salesforce)
-    - approver_id: Filter by approver Slack User ID
-
-    :return: JSON response with list of requests
-    :rtype: tuple[Dict[str, Any], int]
+    ---
+    tags:
+      - Approval Requests
+    produces:
+      - application/json
+    parameters:
+      - name: status
+        in: query
+        type: string
+        enum: [Pending, Approved, Rejected]
+        required: false
+        description: Filter by approval status
+        example: Pending
+      - name: source
+        in: query
+        type: string
+        enum: [Workday, Concur, Salesforce]
+        required: false
+        description: Filter by request source system
+        example: Workday
+      - name: approver_id
+        in: query
+        type: string
+        required: false
+        description: Filter by approver Slack User ID
+        example: U123456
+    responses:
+      200:
+        description: List of approval requests
+        schema:
+          type: object
+          properties:
+            requests:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  request_source:
+                    type: string
+                    example: Workday
+                  requester_name:
+                    type: string
+                    example: John Doe
+                  approver_id:
+                    type: string
+                    example: U123456
+                  status:
+                    type: string
+                    example: Pending
+                  justification_text:
+                    type: string
+                    example: Need time off for vacation
+                  metadata_json:
+                    type: object
+                  created_at:
+                    type: string
+                    format: date-time
+                  updated_at:
+                    type: string
+                    format: date-time
+            count:
+              type: integer
+              description: Number of requests returned
+              example: 5
+      500:
+        description: Internal server error
+        schema:
+          type: object
+          properties:
+            error:
+              type: string
+              example: Internal server error
     """
     try:
         query = ApprovalRequest.query

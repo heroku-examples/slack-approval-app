@@ -34,7 +34,88 @@ A Proof of Concept (POC) application that demonstrates how Slack, integrated wit
 
 > **For Local Development Only**: PostgreSQL 12+ with pgvector extension (see Local Development Setup below)
 
+## Deployment to Heroku
+
+> **📋 Workshop Focus**: This section covers Heroku deployment, which is the primary focus of the workshop. For local development setup (outside workshop scope), see [Local Development Setup](#local-development-setup) below.
+
+This application is designed to run on Heroku with Heroku Postgres. The `DATABASE_URL` environment variable is automatically set when you attach a Postgres add-on to your Heroku app.
+
+### 1. Create Heroku App
+
+```bash
+heroku create your-app-name
+```
+
+### 2. Add Heroku Postgres Add-on
+
+For standard workloads:
+```bash
+heroku addons:create heroku-postgresql:essential-0 --app your-app-name
+```
+
+For high-performance, scalable workloads, consider **Heroku Postgres Advanced** (pilot program):
+- Sign up for the [Heroku Postgres Advanced pilot](https://www.heroku.com/blog/introducing-the-next-generation-of-heroku-postgres/)
+- Provides 4X+ throughput, 200TB+ storage, and zero-downtime scaling
+- Once available, provision via Heroku dashboard or CLI
+
+> **Note**: Heroku Postgres Advanced will eventually replace Standard, Premium, Private, and Shield tiers. The application automatically detects and uses the `DATABASE_URL` provided by any Heroku Postgres add-on.
+
+### 3. Add Heroku Managed Inference (Optional)
+
+```bash
+heroku addons:create heroku-managed-inference:starter --app your-app-name
+```
+
+### 4. Set Environment Variables
+
+```bash
+heroku config:set SECRET_KEY=your-secret-key --app your-app-name
+heroku config:set SLACK_BOT_TOKEN=xoxb-your-token --app your-app-name
+heroku config:set SLACK_SIGNING_SECRET=your-signing-secret --app your-app-name
+heroku config:set SLACK_APP_ID=your-app-id --app your-app-name
+```
+
+> **Note**: `DATABASE_URL` is automatically set by Heroku when you attach a Postgres add-on. You do not need to set it manually.
+
+### 5. Deploy
+
+```bash
+git push heroku main
+```
+
+### 6. Initialize Database
+
+The application will automatically:
+- Enable the pgvector extension
+- Create all required tables
+- Set up the database schema
+
+You can also manually run the setup script:
+```bash
+heroku run python scripts/setup_db.py --app your-app-name
+```
+
+### 7. Seed Data (Optional)
+
+```bash
+heroku run python scripts/seed_data.py --app your-app-name
+```
+
+### 8. Verify Deployment
+
+Check that your app is running:
+```bash
+heroku open --app your-app-name
+```
+
+View logs:
+```bash
+heroku logs --tail --app your-app-name
+```
+
 ## Local Development Setup
+
+> **Note**: Local development setup is outside the scope of the workshop. This section is provided for developers who want to run the application locally for development or testing purposes.
 
 ### 1. Clone the Repository
 
@@ -215,6 +296,17 @@ No slash commands are required for this POC.
 
 ## API Endpoints
 
+> **✅ Swagger/OpenAPI Documentation Available**: Interactive API documentation is available at `/api-docs` when the application is running. The documentation is automatically generated from Flask docstrings using Flasgger.
+
+**Access Swagger UI:**
+- Local: `http://localhost:5000/api-docs`
+- Heroku: `https://your-app.herokuapp.com/api-docs`
+
+The codebase includes:
+- **Comprehensive docstrings**: Sphinx-style with `:param:`, `:return:`, `:rtype:` tags
+- **Type hints**: Function signatures include type hints using `typing` module
+- **Swagger/OpenAPI**: Interactive documentation via Flasgger at `/api-docs`
+
 ### Health Check
 
 ```
@@ -223,12 +315,25 @@ GET /health
 
 Returns application health status.
 
+**Response:**
+```json
+{
+  "status": "healthy",
+  "service": "universal-approval-hub"
+}
+```
+
 ### Create Approval Request
 
 ```
 POST /api/new-approval
 Content-Type: application/json
+```
 
+Creates a new approval request from external system webhook (or web form).
+
+**Request Body:**
+```json
 {
   "request_source": "Workday|Concur|Salesforce",
   "requester_name": "John Doe",
@@ -242,13 +347,43 @@ Content-Type: application/json
 }
 ```
 
+**Response (201 Created):**
+```json
+{
+  "id": 1,
+  "status": "created",
+  "message": "Approval request created successfully"
+}
+```
+
+### Get Approval Requests
+
+```
+GET /api/requests?status=Pending&source=Workday&approver_id=U123456
+```
+
+Fetches approval requests with optional filtering.
+
+**Query Parameters:**
+- `status` (optional): Filter by status (Pending, Approved, Rejected)
+- `source` (optional): Filter by source (Workday, Concur, Salesforce)
+- `approver_id` (optional): Filter by approver Slack User ID
+
+**Response (200 OK):**
+```json
+{
+  "requests": [...],
+  "count": 5
+}
+```
+
 ### Slack Events
 
 ```
 POST /slack/events
 ```
 
-Handles Slack Events API callbacks.
+Handles Slack Events API callbacks (URL verification, `app_home_opened` events).
 
 ### Slack Interactive Components
 
@@ -256,7 +391,7 @@ Handles Slack Events API callbacks.
 POST /slack/interactive
 ```
 
-Handles button clicks and other interactive components.
+Handles button clicks (approve/reject) and other interactive components.
 
 ### Slack Home Tab
 
@@ -264,7 +399,7 @@ Handles button clicks and other interactive components.
 POST /slack/home
 ```
 
-Returns Home Tab view for a user.
+Returns Home Tab view for a user (deprecated - use Events API instead).
 
 ## Database Schema
 
@@ -333,82 +468,6 @@ curl -X POST https://your-app.herokuapp.com/api/new-approval \
   }'
 ```
 
-## Deployment to Heroku
-
-This application is designed to run on Heroku with Heroku Postgres. The `DATABASE_URL` environment variable is automatically set when you attach a Postgres add-on to your Heroku app.
-
-### 1. Create Heroku App
-
-```bash
-heroku create your-app-name
-```
-
-### 2. Add Heroku Postgres Add-on
-
-For standard workloads:
-```bash
-heroku addons:create heroku-postgresql:mini
-```
-
-For high-performance, scalable workloads, consider **Heroku Postgres Advanced** (pilot program):
-- Sign up for the [Heroku Postgres Advanced pilot](https://www.heroku.com/blog/introducing-the-next-generation-of-heroku-postgres/)
-- Provides 4X+ throughput, 200TB+ storage, and zero-downtime scaling
-- Once available, provision via Heroku dashboard or CLI
-
-> **Note**: Heroku Postgres Advanced will eventually replace Standard, Premium, Private, and Shield tiers. The application automatically detects and uses the `DATABASE_URL` provided by any Heroku Postgres add-on.
-
-### 3. Add Heroku Managed Inference (Optional)
-
-```bash
-heroku addons:create heroku-managed-inference:starter
-```
-
-### 4. Set Environment Variables
-
-```bash
-heroku config:set SECRET_KEY=your-secret-key
-heroku config:set SLACK_BOT_TOKEN=xoxb-your-token
-heroku config:set SLACK_SIGNING_SECRET=your-signing-secret
-heroku config:set SLACK_APP_ID=your-app-id
-```
-
-> **Note**: `DATABASE_URL` is automatically set by Heroku when you attach a Postgres add-on. You do not need to set it manually.
-
-### 5. Deploy
-
-```bash
-git push heroku main
-```
-
-### 6. Initialize Database
-
-The application will automatically:
-- Enable the pgvector extension
-- Create all required tables
-- Set up the database schema
-
-You can also manually run the setup script:
-```bash
-heroku run python scripts/setup_db.py
-```
-
-### 7. Seed Data (Optional)
-
-```bash
-heroku run python scripts/seed_data.py
-```
-
-### 8. Verify Deployment
-
-Check that your app is running:
-```bash
-heroku open
-```
-
-View logs:
-```bash
-heroku logs --tail
-```
 
 ## Project Structure
 
@@ -488,9 +547,34 @@ UniversalApprovalHub/
 ## Contributing
 
 1. Follow PEP 8 style guidelines
-2. Include docstrings for all functions and classes
-3. Write tests for new features
-4. Update documentation as needed
+2. Include docstrings for all functions and classes (Sphinx-style with `:param:`, `:return:`, `:rtype:`)
+3. Add type hints to function signatures (using `typing` module)
+4. Write tests for new features
+5. Run tests before submitting: `pytest` (or `pytest --cov=.` for coverage)
+6. Update documentation as needed
+
+### Code Documentation Standards
+
+The project uses:
+- **Docstrings**: Sphinx-style docstrings with `:param:`, `:return:`, `:rtype:` tags
+- **Type Hints**: Function signatures include type hints using `typing` module
+- **API Documentation**: Currently manual (see API Endpoints section above). Swagger/OpenAPI not yet implemented.
+
+### Running Tests
+
+```bash
+# Install test dependencies (if not already installed)
+pip install -r requirements.txt
+
+# Run all tests
+pytest
+
+# Run with coverage report
+pytest --cov=. --cov-report=html
+
+# Run specific test file
+pytest tests/test_api_routes.py
+```
 
 ## License
 
