@@ -39,6 +39,30 @@ swagger_config = {
     "specs_route": "/api-docs"
 }
 
+# Get host dynamically for Heroku
+def get_swagger_host():
+    """Get Swagger host from environment or default to localhost.
+    
+    On Heroku, we can omit the host to let Swagger use the request host,
+    or set it explicitly if needed.
+    
+    :return: Host string for Swagger, or None to use request host
+    :rtype: str or None
+    """
+    # Check if we're on Heroku
+    if os.environ.get('DYNO'):
+        # On Heroku, try to get from DATABASE_URL or construct from app name
+        database_url = os.environ.get('DATABASE_URL', '')
+        # Extract app name from Heroku Postgres URL if available
+        # Format: postgres://user:pass@hostname:port/db
+        # Hostname format on Heroku: ec2-xx-xx-xx-xx.compute-1.amazonaws.com
+        # But we want the app name, not the database host
+        # Better: use SWAGGER_HOST env var or omit host to use request host
+        return os.environ.get('SWAGGER_HOST')  # Return None if not set, Flasgger will use request host
+    # Local development - use explicit host
+    return os.environ.get('SWAGGER_HOST', 'localhost:5000')
+
+# Build Swagger template
 swagger_template = {
     "swagger": "2.0",
     "info": {
@@ -54,9 +78,8 @@ swagger_template = {
             "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
         }
     },
-    "host": os.environ.get('SWAGGER_HOST', 'localhost:5000'),
     "basePath": "/",
-    "schemes": ["http", "https"],
+    "schemes": ["https", "http"],  # HTTPS first for Heroku
     "tags": [
         {
             "name": "Health",
@@ -69,7 +92,10 @@ swagger_template = {
     ]
 }
 
-swagger = Swagger(app, config=swagger_config, template=swagger_template)
+# Only add host if explicitly set (for local dev), omit on Heroku to use request host
+swagger_host = get_swagger_host()
+if swagger_host:
+    swagger_template["host"] = swagger_host
 
 # Setup logging
 setup_logging(app.config.get('LOG_LEVEL', 'INFO'))
@@ -85,10 +111,20 @@ except Exception as e:
         'Ensure DATABASE_URL is set or attach a Heroku Postgres add-on.'
     )
 
-# Register blueprints
+# Register blueprints BEFORE Swagger initialization
+# Swagger needs routes to be registered to generate the spec
 app.register_blueprint(api_bp, url_prefix='/api')
 app.register_blueprint(slack_bp, url_prefix='/slack')
 app.register_blueprint(web_bp)
+
+# Initialize Swagger AFTER blueprints are registered
+# This allows Swagger to discover routes from blueprints
+try:
+    swagger = Swagger(app, config=swagger_config, template=swagger_template)
+    logger.info('Swagger documentation initialized')
+except Exception as e:
+    logger.error(f'Swagger initialization failed: {e}')
+    logger.warning('API documentation may not be available')
 
 
 @app.errorhandler(404)
