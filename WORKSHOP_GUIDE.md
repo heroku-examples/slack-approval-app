@@ -4,8 +4,13 @@ Welcome to the Universal Approval Hub workshop! This comprehensive guide will ta
 
 ## Workshop Overview
 
-**Duration**: 60-90 minutes  
+**Duration**: 
+- **With Pre-Workshop Setup**: 40-60 minutes (hands-on coding and deployment)
+- **Without Pre-Workshop Setup**: 60-90 minutes (includes installation and setup)
+
 **Goal**: Deploy a fully functional approval hub that integrates Slack with Heroku, demonstrating AI-powered approval workflows
+
+> **💡 Pro Tip**: Complete the **Pre-Workshop Setup** section below before the workshop to save 20-30 minutes and focus on the fun parts!
 
 **What You'll Build**:
 - A Flask application deployed on Heroku
@@ -22,18 +27,38 @@ Before starting, ensure you have:
 
 - ✅ A computer with internet access
 - ✅ A GitHub account (free)
-- ✅ A Heroku account
+- ✅ A Heroku account - See [this article](https://basecamp.salesforce.com/content/techforce-heroku-for-sfdc-employees) on BaseCamp
 - ✅ A Slack account (we'll create a Sandbox workspace)
 - ✅ Git installed on your computer
 - ✅ Heroku CLI installed ([download here](https://devcenter.heroku.com/articles/heroku-cli))
 - ✅ Basic familiarity with command line (help will be provided)
 
-## Part 1: Set Up Slack Sandbox Workspace (15 minutes)
+## Pre-Workshop Setup
 
-### Step 1: Create a Slack Sandbox Workspace
+> **📋 Important**: Please complete the **[PRE_WORKSHOP_SETUP.md](PRE_WORKSHOP_SETUP.md)** guide before the workshop!
+
+**⏱️ Time Savings: 20-30 minutes** - Completing the pre-workshop setup will allow you to focus on the exciting parts: building and deploying your application!
+
+The pre-workshop setup guide covers:
+- Account creation and verification (GitHub, Heroku, Slack)
+- Software installation (Git, Heroku CLI, Python)
+- Heroku CLI login and verification
+- Repository cloning
+- Optional Slack Sandbox workspace creation
+- Complete verification checklist
+
+**After completing the pre-workshop setup, the workshop will take 40-60 minutes** (instead of 60-90 minutes).
+
+If you haven't completed the pre-workshop setup, don't worry! The workshop will include time for these steps, but you'll have less time for hands-on coding and exploration.
+
+## Part 1: Set Up Slack Sandbox Workspace (10 minutes)
+
+> **⏭️ Skip if you completed Pre-Workshop Setup**: If you already created a Slack Sandbox workspace, skip to Step 2.
+
+### Step 1: Create a Slack Sandbox Workspace (if not done already)
 
 1. **Go to Slack Developer Portal**:
-   - Visit [api.slack.com](https://api.slack.com)
+   - Visit [the Slack Developer Program](https://api.slack.com/developer-program)
    - Click **"Get Started"** or **"Sign In"**
 
 2. **Create a Sandbox Workspace**:
@@ -145,23 +170,32 @@ Before starting, ensure you have:
 
 > **Note**: We'll complete the Request URLs after deploying to Heroku. Keep the Slack app configuration page open.
 
-## Part 3: Set Up Local Development Environment (10 minutes)
+## Part 3: Set Up Local Development Environment (5 minutes)
 
-### Step 8: Install Prerequisites
+> **⏭️ Skip if you completed Pre-Workshop Setup**: If you already installed Git, Heroku CLI, Python, and cloned the repository, you can skip to Part 4.
 
-1. **Install Git** (if not already installed):
-   - Download from [git-scm.com](https://git-scm.com/downloads)
-   - Verify installation: `git --version`
+### Step 8: Verify Prerequisites
 
-2. **Install Heroku CLI** (if not already installed):
-   - Download from [devcenter.heroku.com/articles/heroku-cli](https://devcenter.heroku.com/articles/heroku-cli)
-   - Verify installation: `heroku --version`
+1. **Verify Git Installation**:
+   ```bash
+   git --version
+   ```
+   - If not installed, download from [git-scm.com](https://git-scm.com/downloads)
 
-3. **Install Python 3.11+** (if not already installed):
-   - Download from [python.org](https://www.python.org/downloads/)
-   - Verify installation: `python3 --version`
+2. **Verify Heroku CLI Installation**:
+   ```bash
+   heroku --version
+   ```
+   - If not installed, download from [devcenter.heroku.com/articles/heroku-cli](https://devcenter.heroku.com/articles/heroku-cli)
 
-### Step 9: Clone the Repository
+3. **Verify Python Installation**:
+   ```bash
+   python3 --version
+   ```
+   - Should show 3.11 or higher
+   - If not installed, download from [python.org](https://www.python.org/downloads/)
+
+### Step 9: Clone the Repository (if not done already)
 
 1. **Get the Repository URL**:
    - Ask your facilitator for the GitHub repository URL
@@ -181,7 +215,9 @@ Before starting, ensure you have:
 
 ## Part 4: Deploy to Heroku (15 minutes)
 
-### Step 10: Log In to Heroku
+> **⏭️ Skip if you completed Pre-Workshop Setup**: If you already logged in to Heroku CLI, skip Step 10.
+
+### Step 10: Log In to Heroku (if not done already)
 
 1. **Log In via CLI**:
    ```bash
