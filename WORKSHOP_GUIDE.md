@@ -41,7 +41,7 @@ Before starting, ensure you have:
 
 The pre-workshop setup guide covers:
 - Account creation and verification (GitHub, Heroku, Slack)
-- Software installation (Git, Heroku CLI, Python)
+- Software installation (Git, [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli), Python)
 - Heroku CLI login and verification
 - Repository cloning
 - Optional Slack Sandbox workspace creation
@@ -172,7 +172,7 @@ If you haven't completed the pre-workshop setup, don't worry! The workshop will 
 
 ## Part 3: Set Up Local Development Environment (5 minutes)
 
-> **⏭️ Skip if you completed Pre-Workshop Setup**: If you already installed Git, Heroku CLI, Python, and cloned the repository, you can skip to Part 4.
+> **⏭️ Skip if you completed Pre-Workshop Setup**: If you already installed Git, Heroku CLI, and Python, you can skip Step 8. **Note**: Step 9 (cloning the repository) is always required, as repository cloning is intentionally done during the workshop.
 
 ### Step 8: Verify Prerequisites
 
@@ -195,7 +195,7 @@ If you haven't completed the pre-workshop setup, don't worry! The workshop will 
    - Should show 3.11 or higher
    - If not installed, download from [python.org](https://www.python.org/downloads/)
 
-### Step 9: Clone the Repository (if not done already)
+### Step 9: Clone the Repository
 
 1. **Get the Repository URL**:
    - Ask your facilitator for the GitHub repository URL
