@@ -5,12 +5,12 @@ Welcome to the Universal Approval Hub workshop! This comprehensive guide will ta
 ## Workshop Overview
 
 **Duration**: 
-- **With Pre-Workshop Setup**: 40-60 minutes (hands-on coding and deployment)
-- **Without Pre-Workshop Setup**: 60-90 minutes (includes installation and setup)
+- **With [Pre-Workshop Setup](PRE_WORKSHOP_SETUP.md)**: 40-60 minutes (hands-on coding and deployment)
+- **Without [Pre-Workshop Setup](PRE_WORKSHOP_SETUP.md)**: 60-90 minutes (includes installation and setup)
 
 **Goal**: Deploy a fully functional approval hub that integrates Slack with Heroku, demonstrating AI-powered approval workflows
 
-> **💡 Pro Tip**: Complete the **Pre-Workshop Setup** section below before the workshop to save 20-30 minutes and focus on the fun parts!
+> **💡 Pro Tip**: Complete the **[Pre-Workshop Setup](PRE_WORKSHOP_SETUP.md)** section below before the workshop to save 20-30 minutes and focus on the fun parts!
 
 **What You'll Build**:
 - A Flask application deployed on Heroku
@@ -27,7 +27,7 @@ Before starting, ensure you have:
 
 - ✅ A computer with internet access
 - ✅ A GitHub account (free)
-- ✅ A Heroku account - See [this article](https://basecamp.salesforce.com/content/techforce-heroku-for-sfdc-employees) on BaseCamp
+- ✅ A Heroku account - Salesforce employees see [this article](https://basecamp.salesforce.com/content/techforce-heroku-for-sfdc-employees) on BaseCamp
 - ✅ A Slack account (we'll create a Sandbox workspace)
 - ✅ Git installed on your computer
 - ✅ Heroku CLI installed ([download here](https://devcenter.heroku.com/articles/heroku-cli))
@@ -96,8 +96,8 @@ If you haven't completed the pre-workshop setup, don't worry! The workshop will 
 
 2. **Enable Home Tab**:
    - Under **"Home Tab"**, toggle the switch to **ON**
-   - Under **"Show Tabs"**, ensure **"Home Tab"** is checked
-   - **Important**: Set Home Tab to **"Publishable"** (not "Read-only")
+   - Under **"Show Tabs"**, ensure **"Home Tab"** is enabled
+   - Under **"Messages Tab"**, toggle the switch to **ON**
    - Click **"Save Changes"**
 
 ### Step 4: Configure OAuth & Permissions
@@ -111,6 +111,10 @@ If you haven't completed the pre-workshop setup, don't worry! The workshop will 
      - `chat:write` - Required for publishing Home Tab views and sending messages
      - `users:read` - Required for reading user information
      - `users:read.email` - Optional, for reading user emails
+     - `app_mentions:read` - View messages
+     - `channels:history` - View messages
+     - `incoming-webhook` - Post messages to specific channels in Slack
+     
 
 3. **Install App to Workspace**:
    - Scroll to the top of the page
@@ -155,7 +159,7 @@ If you haven't completed the pre-workshop setup, don't worry! The workshop will 
 ### Step 7: Configure Interactive Components
 
 1. **Open Interactivity**:
-   - Click **"Interactivity"** in the left sidebar (under **Features**)
+   - Click **"Interactivity & Shortcuts"** in the left sidebar (under **Features**)
 
 2. **Enable Interactivity**:
    - Toggle **"Interactivity"** to **ON**
@@ -199,7 +203,7 @@ If you haven't completed the pre-workshop setup, don't worry! The workshop will 
 
 1. **Get the Repository URL**:
    - Ask your facilitator for the GitHub repository URL
-   - Or use: `https://github.com/heroku-examples/slack-approval-app.git`
+   - Or use: [`https://github.com/heroku-examples/slack-approval-app.git`](https://github.com/heroku-examples/slack-approval-app.git)
 
 2. **Clone the Repository**:
    ```bash
@@ -288,7 +292,7 @@ If you haven't completed the pre-workshop setup, don't worry! The workshop will 
    ```
    - Replace with the values you copied from Slack earlier
 
-2. **Set Secret Key**:
+2. **Set Secret Key for Flask App**:
    ```bash
    heroku config:set SECRET_KEY=$(python3 -c 'import secrets; print(secrets.token_hex(32))') --app your-app-name
    ```
@@ -372,7 +376,7 @@ Now that your app is deployed, complete the Slack configuration:
 
 2. **Fill Out the Form**:
    - **Request Source**: Select "Workday"
-   - **Requester Name**: Enter your name
+   - **Requester Name**: Enter your name or make one up.
    - **Approver Slack User ID**: Paste your Slack User ID (from Step 17)
    - **Justification**: Enter "Test PTO request for workshop"
    - **Metadata**: Click "Fill Sample Data" to auto-fill, or enter manually
